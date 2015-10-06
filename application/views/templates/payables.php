@@ -1,6 +1,15 @@
 <?php $this->load->view('main/header'); ?>
+<div class="table-responsive">
+<?php if($this->session->flashdata('message') != ''){ ?>
+		<div class="alert alert-success alert-dismissible" role="alert" id="alertclose">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<strong><i class="fa fa-info"></i> <?php echo $this->session->flashdata("message"); ?></strong>
+		</div>
+<?php } ?>
+<form method="post">
 <table class="table table-bordered" style="font-size: 12px">
-    <thead>
+<input type="submit" class="btn btn-success pull-right" style="margin-bottom: 5px;" value ="Post">
+    <thead style="font-size: 11px">
       <tr>
         <th>PO NO.</th>
         <th>RCR NO.</th>
@@ -12,7 +21,7 @@
         <th>RCR AMT</th>
         <th>INVOICE AMT</th>
         <th>NEW AMOUNT</th>
-        <th>OK TO PROCESS</th>
+        <th><input type="checkbox" id="selectall">SELECT ALL</th>
       </tr>
     </thead>
       <?php foreach($payables as $values){ ?>
@@ -30,9 +39,12 @@
 			<?php }else{ ?>
 			<td style="background-color:#FFFFFF"><?php echo number_format($values['POSHPR'], 2); ?></td>
 			<?php } ?>
-		    <td><input type="text"></td>
-		    <td><input type="checkbox"> Ok</td>
+			<input type="hidden" name="hdn_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['POMRCV']; ?>">
+		    <td><input type="text" name="txt_<?php echo $values['PONUMB']; ?>"></td>
+		    <td><input type="checkbox" name="selector[]" value="<?php echo $values['PONUMB']; ?>"></td>
       </tr>
       <?php } ?>
   </table>
+  </form>
+</div>
 <?php $this->load->view('main/footer'); ?>

@@ -75,6 +75,29 @@ class Payables extends CI_Controller {
 		$data['payables'] = $result;
 		$data['pagetitle'] = 'Payables';
 		$this->load->view('templates/payables',$data);
+
+	if($_SERVER['REQUEST_METHOD'] == 'POST')
+	{
+		$po_no = $this->input->post('selector');
+		$rcr_no = $this->input->post('rcr_no');
+		$count_po = count($po_no);
+
+		for($i = 0; $i < $count_po; $i++)
+		{
+			$data = array(
+					'po_no'      => $po_no[$i],
+					'rcr_no'     => $this->input->post('hdn_'.$po_no[$i]),
+					'new_amount' => $this->input->post('txt_'.$po_no[$i]),
+					'status'	 => '1'
+			);
+
+			$this->db->insert('payables_status', $data);
+			$this->session->set_flashdata('message', 'Changes successfully saved!');
+			redirect('payables/showpay');
+
+			}
+	}
+
 	}
 
 
