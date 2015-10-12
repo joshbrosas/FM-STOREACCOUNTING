@@ -25,8 +25,7 @@
     <link href="<?php echo base_url(); ?>assets/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
     <!-- DataTables Responsive CSS -->
     <link href="<?php echo base_url(); ?>assets/bower_components/datatables-responsive/css/dataTables.responsive.css" rel="stylesheet">
-	<script src="<?php echo base_url(); ?>assets/bower_components/jquery/dist/jquery.min.js"></script>
-
+    <script src="<?php echo base_url(); ?>assets/bower_components/jquery/dist/jquery.min.js"></script>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -45,14 +44,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="<?php echo base_url();?>index.php/main/index"><strong style="color: #5cb85c">FamilyMart(<i>Payables</i>) </strong></a>
+                <a class="navbar-brand" href="<?php echo base_url();?>index.php/main/index"><strong style="color: #5cb85c">FamilyMart (<i>Store Accounting</i>) </strong></a>
             </div>
             <!-- /.navbar-header -->
 
             <ul class="nav navbar-top-links navbar-right">
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                        <i class="fa fa-user fa-fw" style="color: #5cb85c"></i> <strong style="color: #5cb85c"><?php echo $this->session->userdata('fm_username'); ?></strong>  <i style="color: #5cb85c" class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
 						<!--
@@ -61,7 +60,7 @@
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>-->
-                        <li><a href="<?php echo base_url(); ?>index.php/main/index/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a href="<?php echo base_url(); ?>index.php/payables/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
                 </li>
@@ -70,15 +69,15 @@
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
 							<li><a href="<?php echo base_url(); ?>index.php/payables/index"><i class="fa fa-home fa-fw"></i>  Home</a></li>
-                            <li><a href="<?php echo base_url(); ?>index.php/payables/showpay"><i class="fa fa-home fa-table"></i>  Payables </a>
+                            <li><a href="<?php echo base_url(); ?>index.php/payables/showpay"> Payables </a>
+                                <ul class="nav nav-second-level">
+                                    <li><a href="<?php echo base_url(); ?>index.php/payables/showpay">Show Payables</a></li>
+                                    <li><a href="<?php echo base_url(); ?>index.php/payables/process">All Process</a></li>
+                                    <li><a href="<?php echo base_url(); ?>index.php/main/linklines"> Transaction</a></li>
+                                </ul>
                             </li>
-
-							<li>
-
-							</li>
-							<li>
-                            <!--<a href="<?php //echo base_url(); ?>index.php/main/about"><i class="fa fa-info fa-fw"></i> About</a>-->
-							</li>
+                           <li><a href="<?php echo base_url(); ?>index.php/payables/salesaudit"> Sales Audit </a>
+                            </li>
                     </ul>
                 </div>
             </div>

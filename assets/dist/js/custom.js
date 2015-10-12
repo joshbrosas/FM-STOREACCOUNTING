@@ -1,3 +1,29 @@
+function toggle(id) {
+
+$( "input" ).keyup(function() {
+  var txt = document.getElementsByName('txt_'+id)[0].value;
+  if(txt == "")
+    {
+      document.getElementById("check_" + id).checked=false;
+    }else{
+      document.getElementById("check_" + id).checked=true;
+    }
+});
+
+}
+$("#formexport").submit(function () {
+
+  var datepicker1 = $('#dpd1').val();
+  var datepicker2 = $('#dpd2').val();
+
+  if(datepicker1 == '' || datepicker2 == '')
+  {
+      alert('Please Fill all the required fields!');
+      return false;
+  }
+  });
+
+
 var nowTemp = new Date();
 var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
  

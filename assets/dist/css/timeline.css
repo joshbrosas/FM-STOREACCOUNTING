@@ -178,3 +178,13 @@
         border-left-width: 0;
     }
 }
+table.dataTable thead .sorting, 
+table.dataTable thead .sorting_asc, 
+table.dataTable thead .sorting_desc {
+    background : none;
+}
+.sorting, .sorting_asc, .sorting_desc {
+    background : none;
+}
+.DataTables_sort_icon { display:none;}
+.dataTable > thead > tr > th[class*="sort"]::after{display: none}
