@@ -60,6 +60,9 @@
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>-->
+                        <?php if($this->session->userdata('fm_roles') == 1 ){ ?>
+                        <li><a href="<?php echo base_url(); ?>index.php/user/getcreateuser"><i class="fa fa-sign-out fa-users"></i> Create Users</a></li>
+                        <?php } ?>
                         <li><a href="<?php echo base_url(); ?>index.php/payables/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
@@ -76,8 +79,8 @@
                                     <li><a href="<?php echo base_url(); ?>index.php/payables/transaction"> Exception</a></li>
                                 </ul>
                             </li>
-                           <li><a href="<?php echo base_url(); ?>index.php/payables/salesaudit"> Sales Audit </a>
-                            </li>
+                           <li><a href="<?php echo base_url(); ?>index.php/payables/salesaudit"> Sales Audit </a></li>
+                           <li><a href="<?php echo base_url(); ?>index.php/payables/consignment"> Consignment Sales </a></li>
                     </ul>
                 </div>
             </div>

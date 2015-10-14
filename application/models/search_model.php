@@ -27,6 +27,7 @@ class Search_model extends CI_Model {
 
 	public function mod_matched()
 	{
+		set_time_limit(0);
 		$query = $this->db->query("SELECT po_no from payables_status");
 		$res = $query->result();
 		$getallpo = array();
@@ -34,12 +35,7 @@ class Search_model extends CI_Model {
 			$getallpo[] =  $ponumb->po_no;
 		}
 
-		$cnString = "odbc:DRIVER={iSeries Access ODBC Driver}; ".
-					"SYSTEM=172.16.1.9; ".
-					"DATABASE=MMFMSLIB; ".
-					"UID=DCLACAP; ".
-					"PWD=PASSWORD";
-		$this->dbh = new PDO($cnString,"","");
+		$this->dbh = new PDO($this->connectionString(),"","");
 
 
 			$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
@@ -95,6 +91,7 @@ class Search_model extends CI_Model {
 
 	public function mod_exception()
 	{
+		set_time_limit(0);
 		$query = $this->db->query("SELECT po_no, new_amount from payables_status  where status = 1");
 		$res = $query->result();
 
@@ -134,31 +131,31 @@ class Search_model extends CI_Model {
 			fputs($dataFile,"\"IND\",\"BLDAT\",\"BLART\",\"BUKRS\",\"BUDAT\",\"MONAT\",\"WAERS\",\"KURSF\",\"XBLNR\",\"SGTXT\",\"CTAX\",\"BSCHL\",\"HKONT\",\"DMBTR\",\"WMBTR\",\"PRCTR\",\"ZUONR\",\"HBNK\",\"ACCID\",\"MWSKZ\",\"VALDT\",\"ITTXT\",\"KOSTL\",\"WBSEL\",\"UMSKZ\"\n");
 
 			foreach ($result as $value) {
-			$ind   = "";
-			$bldat = "";
-			$blart = "";
-			$bukrs = "";
-			$budat = $value['PORDAT'];
-			$monat = "";
-			$waers = "";
-			$kursf = "";
-			$xblnr = "";
-			$sgtxt = "";
-			$ctax  = "";
-			$bschl = "";
-			$hkont = "";
-			$dmbtr = "";
-			$wmbtr = "";
-			$prctr = "";
-			$zuonr = "";
-			$hbnk  = "";
-			$accid = "";
-			$mwskz = "";
-			$valdt = "";
-			$ittxt = "";
-			$kostl = "";
-			$wbsel = "";
-			$umskz = "";
+				$ind   = "";
+				$bldat = "";
+				$blart = "";
+				$bukrs = "";
+				$budat = $value['PORDAT'];
+				$monat = "";
+				$waers = "";
+				$kursf = "";
+				$xblnr = "";
+				$sgtxt = "";
+				$ctax  = "";
+				$bschl = "";
+				$hkont = "";
+				$dmbtr = "";
+				$wmbtr = "";
+				$prctr = "";
+				$zuonr = "";
+				$hbnk  = "";
+				$accid = "";
+				$mwskz = "";
+				$valdt = "";
+				$ittxt = "";
+				$kostl = "";
+				$wbsel = "";
+				$umskz = "";
 			
 			fputs($dataFile,"\"$ind\",\"$bldat\",\"$blart\",\"$bukrs\",\"$budat\",\"$monat\",\"$waers\",\"$kursf\",\"$xblnr\",\"$sgtxt\",\"$ctax\",\"$bschl\",\"$hkont\",\"$dmbtr\",\"$wmbtr\",\"$prctr\",\"$zuonr\",\"$hbnk\",\"$accid\",\"$mwskz\",\"$valdt\",\"$ittxt\",\"$kostl\",\"$wbsel\",\"$umskz\"\n");
 		}
@@ -187,9 +184,5 @@ class Search_model extends CI_Model {
 		$statement->execute();
 		$result  = $statement->fetchAll();
 		return $result;
-
-
 	}
-
-
 }

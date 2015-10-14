@@ -9,20 +9,20 @@ $( "#txt_"+id ).keyup(function() {
     }
 });}
 
-$( "input" ).keypress(function(e) {
-    var a = [];
-    var k = e.which;
+// $( "input" ).keypress(function(e) {
+//     var a = [];
+//     var k = e.which;
 
-    for (i = 48; i < 58; i++)
-    a.push(i);
+//     for (i = 48; i < 58; i++)
+//     a.push(i);
 
-    // allow a max of 1 decimal point to be entered
-    if (this.value.indexOf(".") === -1) {
-        a.push(46);
-    }
+//     // allow a max of 1 decimal point to be entered
+//     if (this.value.indexOf(".") === -1) {
+//         a.push(46);
+//     }
 
-    if (!(a.indexOf(k) >= 0)) e.preventDefault();
-});
+//     if (!(a.indexOf(k) >= 0)) e.preventDefault();
+// });
 $("#formexport").submit(function () {
 
   var datepicker1 = $('#dpd1').val();

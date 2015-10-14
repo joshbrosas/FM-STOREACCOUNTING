@@ -6,7 +6,7 @@
 		<strong><i class="fa fa-info"></i> <?php echo $this->session->flashdata("message"); ?></strong>
 		</div>
 <?php } ?>
-<form method="post" action="<?=site_url('payables/postpayables')?>" class="form-inline" id="formpayables">
+<form method="post" action="<?php echo site_url('payables/postpayables')?>" class="form-inline" id="formpayables">
   <div class="form-group">
     <label>Filter Date: </label>
     <div class="form-group input-group">
@@ -17,7 +17,7 @@
   <input name="btnfilter" value="Filter" class="btn btn-success btn-sm" type="submit">
 <hr>
 <table class="table table-bordered" style="font-size: 12px">
-    <thead style="font-size: 11px">
+    <thead style="font-size: 12px">
       <tr>
         <th>PO NO.</th>
         <th>RCR NO.</th>

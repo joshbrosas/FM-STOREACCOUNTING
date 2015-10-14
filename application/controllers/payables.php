@@ -36,11 +36,16 @@ class Payables extends CI_Controller {
 			$this->db->where('username', $jda_username);
 			$this->db->where('password', md5($jda_password));  
 			$query = $this->db->get('payables_login');
-
+			
 			if($query->num_rows() == 1)
 			{
+				$userinfo = $this->db->query("SELECT * FROM payables_login WHERE username = '{$jda_username}' AND password = md5($jda_password)");
+				$user_result = $userinfo->result();
+				$jda_roles = $user_result[0]->roles;
+
 				$this->session->set_userdata('fm_username',$jda_username);
 				$this->session->set_userdata('fm_password',$jda_password);
+				$this->session->set_userdata('fm_roles',   $jda_roles);
 				redirect('payables/index');	
 			}
 			else
@@ -70,7 +75,7 @@ class Payables extends CI_Controller {
 		{
 			redirect('payables/login');
 		}
-		$data['pagetitle'] = 'Store Accounting';
+		$data['pagetitle'] = 'Payables';
 		$this->load->view('templates/payables',$data);
 	}
 
@@ -232,8 +237,15 @@ class Payables extends CI_Controller {
 		$format_date_from = $date->format("ymd");
 		$frmt_date_from = "$format_date_from"; 
 		$datefrom =  $frmt_date_from;
-
+		
+		$data['pagetitle'] = 'Sales Audit';
 		$data['salesaudit'] = $this->search_model->getResult($datefrom);
 		$this->load->view('templates/salesaudit',$data);
+	}
+
+	public function consignment()
+	{
+		$data['pagetitle'] = 'Consignment Sales';
+		$this->load->view('templates/consignment', $data);
 	}
 }

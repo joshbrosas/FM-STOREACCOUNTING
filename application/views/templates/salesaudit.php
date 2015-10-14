@@ -1,5 +1,5 @@
 <?php $this->load->view('main/header'); ?>
-<form method="post" action="<?=site_url('payables/filter_salesaudit')?>" class="form-inline" id="formpayables">
+<form method="post" action="<?php echo site_url('payables/filter_salesaudit')?>" class="form-inline" id="formpayables">
   <div class="form-group">
     <label>Filter Date: </label>
     <div class="form-group input-group">
@@ -17,20 +17,22 @@
         <th>TOTALSALES</th>
         <th>VATEXMT</th>
         <th>CREDITCARD</th>
+        <th><input type="checkbox" name="selector[]" id="" value="" class="control-label">SELECT ALL</th>
       </tr>
     </thead>
     <?php if(isset($salesaudit)){ ?>
         <?php foreach($salesaudit as $values){?>
           <tr>
-            <td class="col-md-1"><?php echo $values['STRNAM']; ?></td>
+            <td class="col-md-2"><?php echo $values['STRNAM']; ?></td>
             <td class="col-md-1"><?php echo $values['CSREG']; ?></td>
-            <td class="col-md-1"><?php echo number_format($values['00003'], 0); ?></td>
-            <td class="col-md-1"><?php echo number_format($values['00004'], 0); ?></td>
-            <td class="col-md-1"><?php echo number_format($values['00005'], 0); ?></td>
+            <td class="col-md-1" style="text-align: right"><?php echo number_format($values['00003'], 0); ?></td>
+            <td class="col-md-1" style="text-align: right"><?php echo number_format($values['00004'], 0); ?></td>
+            <td class="col-md-1" style="text-align: right"><?php echo number_format($values['00005'], 0); ?></td>
+            <td class="col-md-1"><input type="checkbox" name="selector[]" id="" class="control-label" value=""></td>
           </tr>
         <?php } ?>
     <?php }else{ ?>
-    <td colspan="5"><div class="alert alert-success" style="margin-bottom: 0px">Please select date.</div></td>
+    <td colspan="6"><div class="alert alert-success" style="margin-bottom: 0px">Please select date.</div></td>
     <?php } ?> 
 </table>
 
