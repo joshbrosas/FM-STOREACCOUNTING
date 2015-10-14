@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-	<title>FamilyMart - <?php echo $pagetitle ?></title>
+	<title>Store Accounting - <?php echo $pagetitle ?></title>
 	<!-- Bootstrap Core CSS -->
     <link href="<?php echo base_url(); ?>assets/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- MetisMenu CSS -->
@@ -72,8 +72,8 @@
                             <li><a href="<?php echo base_url(); ?>index.php/payables/showpay"> Payables </a>
                                 <ul class="nav nav-second-level">
                                     <li><a href="<?php echo base_url(); ?>index.php/payables/showpay">Show Payables</a></li>
-                                    <li><a href="<?php echo base_url(); ?>index.php/payables/process">All Process</a></li>
-                                    <li><a href="<?php echo base_url(); ?>index.php/main/linklines"> Transaction</a></li>
+                                    <li><a href="<?php echo base_url(); ?>index.php/payables/process">Two way matched</a></li>
+                                    <li><a href="<?php echo base_url(); ?>index.php/payables/transaction"> Exception</a></li>
                                 </ul>
                             </li>
                            <li><a href="<?php echo base_url(); ?>index.php/payables/salesaudit"> Sales Audit </a>

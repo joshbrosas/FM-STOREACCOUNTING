@@ -1,0 +1,1 @@
+<h1>Connection Error</h1><a href="<?php redirect('payables/process') ?>">Try again</a>

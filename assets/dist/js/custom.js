@@ -1,6 +1,5 @@
 function toggle(id) {
-
-$( "input" ).keyup(function() {
+$( "#txt_"+id ).keyup(function() {
   var txt = document.getElementsByName('txt_'+id)[0].value;
   if(txt == "")
     {
@@ -8,9 +7,22 @@ $( "input" ).keyup(function() {
     }else{
       document.getElementById("check_" + id).checked=true;
     }
-});
+});}
 
-}
+$( "input" ).keypress(function(e) {
+    var a = [];
+    var k = e.which;
+
+    for (i = 48; i < 58; i++)
+    a.push(i);
+
+    // allow a max of 1 decimal point to be entered
+    if (this.value.indexOf(".") === -1) {
+        a.push(46);
+    }
+
+    if (!(a.indexOf(k) >= 0)) e.preventDefault();
+});
 $("#formexport").submit(function () {
 
   var datepicker1 = $('#dpd1').val();
@@ -22,7 +34,6 @@ $("#formexport").submit(function () {
       return false;
   }
   });
-
 
 var nowTemp = new Date();
 var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
@@ -82,19 +93,7 @@ $("#formitem").submit(function () {
   }
   });
 
-var options = {
-  bg: '#5cb85c',
 
-  // leave target blank for global nanobar
-  target: document.getElementById('myDivId'),
-
-  // id for new nanobar
-  id: 'mynano'
-};
-var nanobar = new Nanobar( options );
-nanobar.go( 30 ); 
-
-nanobar.go(100);
 
 $('#selectall').click(function() {
     var c = this.checked;

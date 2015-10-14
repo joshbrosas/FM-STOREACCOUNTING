@@ -6,12 +6,11 @@
 		<strong><i class="fa fa-info"></i> <?php echo $this->session->flashdata("message"); ?></strong>
 		</div>
 <?php } ?>
-<form method="post" class="form-inline">
-  <form class="form-inline">
+<form method="post" action="<?=site_url('payables/postpayables')?>" class="form-inline" id="formpayables">
   <div class="form-group">
     <label>Filter Date: </label>
     <div class="form-group input-group">
-        <input type="text" id="dpd1" name="datefrom" value="<?php echo $this->session->userdata("date"); ?>" class="form-control input-sm">
+        <input type="text" id="dpd1" name="date" value="<?php echo set_value('date', ''); ?>"  class="form-control input-sm">
        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
     </div>
   </div>
@@ -34,6 +33,7 @@
       </tr>
     </thead>
     <?php if(isset($payables)) { ?>
+
 <button type="submit" class="btn btn-success btn-circle btn-lg pull-right" style="padding:0px;z-index: 9999999;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 -moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa fa-check"></i></button>
@@ -50,7 +50,7 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
         <td><?php echo number_format($values['PORVCS'], 2); ?></td>
         <?php if(number_format($values['POSHPR'],2) != number_format($values['PORVCS'],2)){ ?>
       <td style="background-color:#FA5858;color:#ffffff;"><?php echo number_format($values['POSHPR'], 2); ?></td>
-      <td><input type="text" onkeypress="toggle(<?php echo $values['PONUMB']; ?>)" name="txt_<?php echo $values['PONUMB']; ?>" id="<?php echo $values['PONUMB']; ?>"></td>
+      <td><input type="text" onkeypress="toggle(<?php echo $values['PONUMB']; ?>)" name="txt_<?php echo $values['PONUMB']; ?>" id="txt_<?php echo $values['PONUMB']; ?>"></td>
       <?php }else{ ?>
       <td style="background-color:#FFFFFF"><?php echo number_format($values['POSHPR'], 2); ?></td>
       <td></td>
@@ -60,6 +60,8 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
         <td><input type="checkbox" name="selector[]" id="check_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['PONUMB']; ?>"></td>
       <?php } ?>
   </table>
+<?php }else{ ?>
+    <td colspan="11"><div class="alert alert-success" style="margin-bottom: 0px">Please Select date.</div></td>
 <?php } ?> 
   </form>
 

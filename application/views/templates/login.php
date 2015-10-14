@@ -1,7 +1,7 @@
 <?php $this->load->view('default_header'); ?>
 
 <div class="panel-heading">
-	<h3 class="panel-title"><b>Family Mart (<i>Store Accounting</i>)</b></h3>
+	<h3 class="panel-title"><b>FamilyMart (<i>Store Accounting</i>)</b></h3>
 </div>
 <div class="panel-body">
 <?php if (isset($process_error)) { ?>
