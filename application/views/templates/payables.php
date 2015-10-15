@@ -16,8 +16,8 @@
   </div>
   <input name="btnfilter" value="Filter" class="btn btn-success btn-sm" type="submit">
 <hr>
-<table class="table table-bordered" style="font-size: 12px">
-    <thead style="font-size: 12px">
+<table class="table table-bordered table-hover" style="font-size: 12px">
+    <thead style="font-size: 12px" class="table-condensed">
       <tr>
         <th>PO NO.</th>
         <th>RCR NO.</th>
@@ -64,5 +64,20 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
     <td colspan="11"><div class="alert alert-success" style="margin-bottom: 0px">Please Select date.</div></td>
 <?php } ?> 
   </form>
+<script>
+$( "input" ).keypress(function(e) {
+    var a = [];
+    var k = e.which;
 
+    for (i = 48; i < 58; i++)
+    a.push(i);
+
+    // allow a max of 1 decimal point to be entered
+    if (this.value.indexOf(".") === -1) {
+        a.push(46);
+    }
+
+    if (!(a.indexOf(k) >= 0)) e.preventDefault();
+});
+</script>
 <?php $this->load->view('main/footer'); ?>

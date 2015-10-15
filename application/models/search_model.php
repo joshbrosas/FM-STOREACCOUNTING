@@ -50,10 +50,12 @@ class Search_model extends CI_Model {
 
 		$output_dir="csv.docs\\";
 		$todayz=date("mdY",strtotime('+8 hours'));
-		$filename = "TWOWAYPROCESS"."$todayz".".csv";
+		$filename = "TWOWAYPROCESS_"."$todayz".".csv";
 		$dataFile = fopen($output_dir.$filename,'w');
 		fputs($dataFile,"\"IND\",\"BLDAT\",\"BLART\",\"BUKRS\",\"BUDAT\",\"MONAT\",\"WAERS\",\"KURSF\",\"XBLNR\",\"SGTXT\",\"CTAX\",\"BSCHL\",\"HKONT\",\"DMBTR\",\"WMBTR\",\"PRCTR\",\"ZUONR\",\"HBNK\",\"ACCID\",\"MWSKZ\",\"VALDT\",\"ITTXT\",\"KOSTL\",\"WBSEL\",\"UMSKZ\"\n");
 
+		$poimplode = implode(',', $getallpo);
+		$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
 		foreach ($result as $value) {
 
 			$ind   = "";
@@ -84,8 +86,7 @@ class Search_model extends CI_Model {
 			
 			fputs($dataFile,"\"$ind\",\"$bldat\",\"$blart\",\"$bukrs\",\"$budat\",\"$monat\",\"$waers\",\"$kursf\",\"$xblnr\",\"$sgtxt\",\"$ctax\",\"$bschl\",\"$hkont\",\"$dmbtr\",\"$wmbtr\",\"$prctr\",\"$zuonr\",\"$hbnk\",\"$accid\",\"$mwskz\",\"$valdt\",\"$ittxt\",\"$kostl\",\"$wbsel\",\"$umskz\"\n");
 		}
-		$poimplode = implode(',', $getallpo);
-		$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
+		
 		
 	}
 
@@ -107,10 +108,11 @@ class Search_model extends CI_Model {
 			$query = $this->db->query("SELECT po_no from payables_status");
 			$res = $query->result();
 			$getallpo = array();
-		foreach ($res as $key => $ponumb)
-		 	{
-			$getallpo[] =  $ponumb->po_no;
-			}
+
+			foreach ($res as $key => $ponumb)
+		 	 {
+			   $getallpo[] =  $ponumb->po_no;
+			 }
 
 			$this->dbh = new PDO($this->connectionString(),"","");
 
@@ -126,11 +128,14 @@ class Search_model extends CI_Model {
 
 			$output_dir="csv.docs\\";
 			$todayz=date("mdY",strtotime('+8 hours'));
-			$filename = "TWOWAYPROCESS"."$todayz".".csv";
+			$filename = "TWOWAYPROCESS_"."$todayz".".csv";
 			$dataFile = fopen($output_dir.$filename,'w');
 			fputs($dataFile,"\"IND\",\"BLDAT\",\"BLART\",\"BUKRS\",\"BUDAT\",\"MONAT\",\"WAERS\",\"KURSF\",\"XBLNR\",\"SGTXT\",\"CTAX\",\"BSCHL\",\"HKONT\",\"DMBTR\",\"WMBTR\",\"PRCTR\",\"ZUONR\",\"HBNK\",\"ACCID\",\"MWSKZ\",\"VALDT\",\"ITTXT\",\"KOSTL\",\"WBSEL\",\"UMSKZ\"\n");
 
+			$poimplode = implode(',', $getallpo);
+			$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
 			foreach ($result as $value) {
+
 				$ind   = "";
 				$bldat = "";
 				$blart = "";
@@ -159,8 +164,7 @@ class Search_model extends CI_Model {
 			
 			fputs($dataFile,"\"$ind\",\"$bldat\",\"$blart\",\"$bukrs\",\"$budat\",\"$monat\",\"$waers\",\"$kursf\",\"$xblnr\",\"$sgtxt\",\"$ctax\",\"$bschl\",\"$hkont\",\"$dmbtr\",\"$wmbtr\",\"$prctr\",\"$zuonr\",\"$hbnk\",\"$accid\",\"$mwskz\",\"$valdt\",\"$ittxt\",\"$kostl\",\"$wbsel\",\"$umskz\"\n");
 		}
-			$poimplode = implode(',', $getallpo);
-			$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
+			
 	}
 
 

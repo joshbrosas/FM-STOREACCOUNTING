@@ -26,7 +26,7 @@ class User extends CI_Controller {
 	 	$password = $this->input->post('password');
 	 	$cpassword = $this->input->post('cpassword');
 
-	 	$this->form_validation->set_rules('username', 'Username', 'required');
+	 	$this->form_validation->set_rules('username', 'Username', 'required|is_unique[payables_login.username]');
 		$this->form_validation->set_rules('password', 'Password', 'required|matches[cpassword]');
 		$this->form_validation->set_rules('cpassword', 'Password Confirmation', 'required');
 

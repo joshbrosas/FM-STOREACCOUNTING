@@ -19,7 +19,6 @@
 						<div class="col-md-3 control-label"><b>Username: </b></div>
 						<div class="col-md-6">
 							<input type="text" class="form-control input-sm" name="username" placeholder="Type username">
-							<?php echo form_error('username'); ?>
 						</div>	
 					</div>
 
@@ -27,7 +26,6 @@
 						<div class="col-md-3 control-label"><b>Password: </b></div>
 						<div class="col-md-6">
 							<input type="password" class="form-control input-sm" name="password" placeholder="Type password">
-							<?php echo form_error('password'); ?>
 						</div>	
 					</div>
 
@@ -35,7 +33,6 @@
 						<div class="col-md-3 control-label"><b>Confirm: </b></div>
 						<div class="col-md-6">
 							<input type="password" class="form-control input-sm" name="cpassword" placeholder="Type password">
-							<?php echo form_error('cpassword'); ?>
 						</div>	
 					</div>
 
