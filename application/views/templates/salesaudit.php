@@ -3,7 +3,7 @@
   <div class="form-group">
     <label>Filter Date: </label>
     <div class="form-group input-group input-append date">
-        <input type="text" id="dpd1" name="datefilter" style="background-color: #fff" value="<?php echo set_value('datefilter', ''); ?>" class="form-control input-sm" readonly>
+        <input type="text" id="dpd1" name="datefilter" style="background-color: #fff;cursor: pointer" value="<?php echo set_value('datefilter', ''); ?>" class="form-control input-sm" readonly>
        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
     </div>
   </div>

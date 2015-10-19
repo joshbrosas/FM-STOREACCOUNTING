@@ -10,13 +10,13 @@
   <div class="form-group">
     <label>Filter Date: </label>
     <div class="form-group input-group">
-        <input type="text" id="dpd1" name="date" value="<?php echo set_value('date', ''); ?>"  class="form-control input-sm">
+        <input type="text" id="dpd1" readonly style="background-color: #fff;cursor: pointer" name="date" value="<?php echo set_value('date', ''); ?>"  class="form-control input-sm">
        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
     </div>
   </div>
   <input name="btnfilter" value="Filter" class="btn btn-success btn-sm" type="submit">
 <hr>
-<table class="table table-bordered table-hover" style="font-size: 12px">
+<table class="table table-bordered table-hover" id="dataTables-example" style="font-size: 12px">
     <thead style="font-size: 12px" class="table-condensed">
       <tr>
         <th>PO NO.</th>
@@ -29,7 +29,7 @@
         <th>RCR AMT</th>
         <th>INVOICE AMT</th>
         <th>NEW AMOUNT</th>
-        <th><input type="checkbox" id="selectall">SELECT ALL</th>
+        <th><input type="checkbox" class="control-label" id="selectall">SELECT ALL</th>
       </tr>
     </thead>
     <?php if(isset($payables)) { ?>
@@ -43,7 +43,7 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
         <td><?php echo $values['PONUMB']; ?></td>
         <td><?php echo $values['POMRCV']; ?></td>
         <td><?php echo $values['POLOC']; ?></td>
-        <td><?php echo $values['ASNAME']; ?></td>
+        <td class="col-md-3"><?php echo $values['ASNAME']; ?></td>
         <td><?php echo $values['ASTRMS']; ?></td>
         <td><?php echo trim($values['PORDAT']); ?></td>
         <td><?php echo $values['POLADG']; ?></td>

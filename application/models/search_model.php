@@ -189,4 +189,21 @@ class Search_model extends CI_Model {
 		$result  = $statement->fetchAll();
 		return $result;
 	}
+
+	public function consignment($datefrom, $dateto)
+	{
+		$this->dbh = new PDO($this->connectionString(),"","");
+
+		$query = "select c.asname as vendor,sum(a.csexpr) as totalsales 
+				 from MMFMSLIB.cshdet a inner join MMFMSLIB.invmst b
+				  on a.cssku=b.inumbr inner join MMFMSLIB.apsupp c 
+				  on c.asnum=b.asnum where a.cscen=1 and csdate 
+				  between {$datefrom} and {$dateto} and b.istype='CC' 
+				  group by c.asname";
+				  
+		$statement = $this->dbh->prepare($query);
+		$statement->execute();
+		$result  = $statement->fetchAll();
+		return $result;		  
+	}
 }

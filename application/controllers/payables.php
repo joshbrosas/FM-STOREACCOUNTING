@@ -245,6 +245,24 @@ class Payables extends CI_Controller {
 
 	public function consignment()
 	{
+		
+		$data['pagetitle'] = 'Consignment Sales';
+		$this->load->view('templates/consignment', $data);
+	}
+
+	public function filter_consignment()
+	{
+		$date = new DateTime($this->input->post('datefilter1'));
+		$format_date_from = $date->format("ymd");
+		$frmt_date_from = "$format_date_from"; 
+		$datefrom =  $frmt_date_from;
+
+		$date = new DateTime($this->input->post('datefilter2'));
+		$format_date_from = $date->format("ymd");
+		$frmt_date_from = "$format_date_from"; 
+		$dateto =  $frmt_date_from;
+
+		$data['result']	   = $this->search_model->consignment($datefrom, $dateto);
 		$data['pagetitle'] = 'Consignment Sales';
 		$this->load->view('templates/consignment', $data);
 	}

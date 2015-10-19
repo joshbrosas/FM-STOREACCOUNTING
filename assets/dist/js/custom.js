@@ -24,7 +24,7 @@ $("#formexport").submit(function () {
 });
 
 $('#dpd1').datepicker();
-
+$('#dpd2').datepicker();
 $(document).ready(function () {
  
 window.setTimeout(function() {
@@ -36,6 +36,16 @@ window.setTimeout(function() {
 });
 
 $("#formexport").submit(function () {
+  var datepicker1 = $('#dpd1').val();
+  var datepicker2 = $('#dpd2').val();
+  if(datepicker1 == '' || datepicker2 == '')
+  {
+      alert('Please Fill all the required fields!');
+      return false;
+  }
+  });
+
+$("#formconsignment").submit(function () {
   var datepicker1 = $('#dpd1').val();
   var datepicker2 = $('#dpd2').val();
   if(datepicker1 == '' || datepicker2 == '')
