@@ -27,65 +27,8 @@ class Search_model extends CI_Model {
 
 	public function mod_matched()
 	{
-		set_time_limit(0);
-		$query = $this->db->query("SELECT po_no from payables_status");
-		$res = $query->result();
-		$getallpo = array();
-		foreach ($res as $key => $ponumb) {
-			$getallpo[] =  $ponumb->po_no;
-		}
 
-		$this->dbh = new PDO($this->connectionString(),"","");
-
-
-			$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
-                      from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
-                      where  ponumb in('.implode(',', $getallpo).')
-                      order by ponumb desc';	
-		
-
-		$statement = $this->dbh->prepare($query);
-		$statement->execute();
-		$result  = $statement->fetchAll();
-
-		$output_dir="csv.docs\\";
-		$todayz=date("mdY",strtotime('+8 hours'));
-		$filename = "TWOWAYPROCESS_"."$todayz".".csv";
-		$dataFile = fopen($output_dir.$filename,'w');
-		fputs($dataFile,"\"IND\",\"BLDAT\",\"BLART\",\"BUKRS\",\"BUDAT\",\"MONAT\",\"WAERS\",\"KURSF\",\"XBLNR\",\"SGTXT\",\"CTAX\",\"BSCHL\",\"HKONT\",\"DMBTR\",\"WMBTR\",\"PRCTR\",\"ZUONR\",\"HBNK\",\"ACCID\",\"MWSKZ\",\"VALDT\",\"ITTXT\",\"KOSTL\",\"WBSEL\",\"UMSKZ\"\n");
-
-		$poimplode = implode(',', $getallpo);
-		$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
-		foreach ($result as $value) {
-
-			$ind   = "";
-			$bldat = "";
-			$blart = "";
-			$bukrs = "";
-			$budat = $value['PORDAT'];
-			$monat = "";
-			$waers = "";
-			$kursf = "";
-			$xblnr = "";
-			$sgtxt = "";
-			$ctax  = "";
-			$bschl = "";
-			$hkont = "";
-			$dmbtr = "";
-			$wmbtr = "";
-			$prctr = "";
-			$zuonr = "";
-			$hbnk  = "";
-			$accid = "";
-			$mwskz = "";
-			$valdt = "";
-			$ittxt = "";
-			$kostl = "";
-			$wbsel = "";
-			$umskz = "";
-			
-			fputs($dataFile,"\"$ind\",\"$bldat\",\"$blart\",\"$bukrs\",\"$budat\",\"$monat\",\"$waers\",\"$kursf\",\"$xblnr\",\"$sgtxt\",\"$ctax\",\"$bschl\",\"$hkont\",\"$dmbtr\",\"$wmbtr\",\"$prctr\",\"$zuonr\",\"$hbnk\",\"$accid\",\"$mwskz\",\"$valdt\",\"$ittxt\",\"$kostl\",\"$wbsel\",\"$umskz\"\n");
-		}
+		echo "xxxa";
 		
 		
 	}
@@ -206,4 +149,29 @@ class Search_model extends CI_Model {
 		$result  = $statement->fetchAll();
 		return $result;		  
 	}
+
+	public function fdate($date1)
+	{
+	$len=strlen($date1);
+	if($len < 4 or $len == 0 or $date1 == "")
+		return 0;
+	$day=substr($date1,$len-2,2);
+	$mo=substr($date1,$len-4,2);
+	if($len==5)
+		$yr="0" . substr($date1,0,1);
+	elseif($len==4)
+		$yr="00";
+	else
+		$yr=substr($date1,0,2);
+		if($yr >= 80){
+		$yr=$yr+1900;
+		}else{
+		$yr=$yr+2000;
+		}
+	$ret_str="$yr-$mo-$day";
+	return $ret_str;
+	}
+
+
+
 }
