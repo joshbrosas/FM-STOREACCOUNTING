@@ -72,13 +72,14 @@
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
 							<li><a href="<?php echo base_url(); ?>index.php/payables/index"><i class="fa fa-home fa-fw"></i>  Home</a></li>
-                            <li><a href="<?php echo base_url(); ?>index.php/payables/showpay"> Payables </a>
+                            <li><a href="<?php echo base_url(); ?>index.php/payables/showpay"> Payables CO </a>
                                 <ul class="nav nav-second-level">
                                     <li><a href="<?php echo base_url(); ?>index.php/payables/showpay">Show Payables</a></li>
                                     <li><a href="<?php echo base_url(); ?>index.php/payables/process">Two way matched</a></li>
                                     <li><a href="<?php echo base_url(); ?>index.php/payables/transaction"> Exception</a></li>
                                 </ul>
                             </li>
+                            <li><a href="#"> Payables FC </a></li>
                            <li><a href="<?php echo base_url(); ?>index.php/payables/salesaudit"> Sales Audit </a></li>
                            <li><a href="<?php echo base_url(); ?>index.php/payables/consignment"> Consignment Sales </a></li>
                     </ul>

@@ -131,6 +131,10 @@ class Payables extends CI_Controller {
 
 
 		try {
+			$query = $this->db->query("SELECT * FROM payables_status");
+
+			$p_status = $query->result();
+
 			$query = $this->db->query("SELECT po_no from payables_status  where status = 2");
 			$res = $query->result();
 			$po = array();
@@ -140,7 +144,7 @@ class Payables extends CI_Controller {
 
 			$this->dbh = new PDO($this->ConnectionString(),"","");
 
-		
+			#check if the po is empty
 			if(!empty($po)){
 				$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
                       from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
@@ -152,8 +156,10 @@ class Payables extends CI_Controller {
 			$result  = $statement->fetchAll();
 			# Load the view for home
 			$data['process'] = $result;
-		}
+			$data['count_status'] = $p_status;
 
+		}
+		$data['count_status'] = $p_status;
 		$data['pagetitle'] = 'Two Way Matched';
 		$this->load->view('templates/allprocess',$data);
 
@@ -170,144 +176,20 @@ class Payables extends CI_Controller {
 
 	public function postMatched()
 	{
-		$today=date("Y-m-d",strtotime('-1 day'));
-		$nwdate=$this->fdate($today);
-
-		$store['00001']="R1000001";
-		$store['00002']="R1000002";
-		$store['00003']="R1000003";
-		$store['00004']="R1000004";
-		$store['00005']="R1000005";
-		$store['00006']="R1000006";
-		$store['00007']="R1000007";
-		$store['00008']="R1000008";
-		$store['00009']="R1000009";
-		$store['00010']="R1000010";
-		$store['20']="R2211022";
-		$store['9005']="R1009005";
-		
-		$datex = '151001';
-		$len=strlen($datex);
-		if($len < 4 or $len == 0 or $datex == "")
-			return 0;
-		$yy=substr($datex,$len-4,4);
-		$mo=substr($datex,$len-6,2);
-		$day=substr($datex,$len-8,2);
-
-		$datetrn="$yy$mo$day";
-
-		$datetrn=$this->fdate($datex);
-		$datetrn=str_replace("-","",$datetrn);
-
-		$output_dir="csv.docs\\";
-		// open a datafile
-		$filename = "SAP_INV"."$datetrn".".csv";
-		$dataFile = fopen($output_dir.$filename,'w');
-		$datetrnx=str_replace("-","",$datex);
-
-
-		fputs($dataFile,"Indicator,Document Date,Document Type,Company Code,Posting Date,Fiscal Period,Currency Key,Exchange Rate,Reference Document Number,Document Header Text,Calculate tax,Posting Key,Account, Amount in document currency ,Amount in local currency,Profit Center,Assignment Number,House Bank,Account ID ,Tax Code,Value Date,Item Text,Cost Center,WBS Element,Special GL\n");
-		$this->dbh = new PDO($this->connectionString(),"","");
-
-	 	$query = "select poladg,pomrcv from MMFMSLIB.POMRCH where pordat={$datex} and postat=6";
-		
-		$statement = $this->dbh->prepare($query);
-		$statement->execute();
-		$result  = $statement->fetchAll();
-		
-		foreach ($result as $key => $value) {
-			
-			$invoice = $value['POLADG'];
-			$porcv  = $value['POMRCV'];
-
-		fputs($dataFile,"1,$datetrn,KR,R200,$datetrn,$fiscalx,PHP,,$filename,Invoices for the Day - $invoice ,X\n");
-
-
-		$this->dbh = new PDO($this->connectionString(),"","");
-
-	 	$query = "select povnum,poladg,porvcs,poloc,ponumb from MMFMSLIB.POMRCH where pomrcv=$porcv";
-		
-		$statement = $this->dbh->prepare($query);
-		$statement->execute();
-		$result2  = $statement->fetchAll();
-
-			foreach ($result2 as $key => $valuex) {
-					
-					$venfsp = $valuex['POVNUM'];
-
-
-			
-				$this->dbh = new PDO($this->connectionString(),"","");
-
-			 	$query = "select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
-				
-				$statement = $this->dbh->prepare($query);
-				$statement->execute();
-				$result3  = $statement->fetchAll();		
-
-
-				foreach ($result3 as $key => $valuexx) {
-
-					$vatflag = $valuexx['ASTAXC'];
-					$venname = $valuexx['ASNAME'];
-					
-					$vendormap = $this->db->query("SELECT * FROM vendormap where fspvencode= {$venfsp} ");
-					foreach ($vendormap->result_array() as $row)
-					{
-					   $sapven = $row['sapvencode'];
-					   $merch= $valuex['PORVCS'];
-					   $storecd=$valuex['POLOC'];
-					   $ponumber=$valuex['PONUMB'];
-					   
-					   $cstcenter=$store["$storecd"];
-						//$datetrnz=str_replace("-","",$row["mydate"]);
-
-						//$len=strlen($datetrnz);
-						//if($len < 4 or $len == 0 or $datetrnz == "")
-						//	return 0;
-						//$yy=substr($datetrnz,$len-4,4);
-						//$mo=substr($datetrnz,$len-6,2);
-						//$day=substr($datetrnz,$len-8,2);
-
-				$datetrnx="20$datex";
-
-				if ($vatflag =='N') {
-
-						$suppamt=0;
-						$vatamt=$merch * .12;
-						$totpo=$merch;
-						$totpox=$merch;
-
-				}else{
-
-						$suppamt=0;
-						$totpo=$merch / 1.12;
-						$vatamt=$merch - $totpo;
-						$totpox=$merch;
-				}
-
-				//insert all 40  - DR
-
-				            fputs($dataFile,"2,,,,,,,,,,,40,51012101,$merch,$merch,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
-				            fputs($dataFile,"2,,,,,,,,,,,40,11954101,$vatamt,$vatamt,$cstcenter,$ponumber,,,,,,,,\n");
-				//            fputs($dataFile,"2,,,,,,,,,,,40,11401102,$suppamt,$suppamt,$cstcenter,$datetrnx,,,,,,,,\n");
-
-				//insert all 31  - CR
-
-							fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
-
-					}
-
-				}
-				}	
-
-		}
-		
+		#redirect to a model with a function mod_matched
+		$this->search_model->mod_matched();
+		$this->session->set_flashdata("message", "Successfully exported!");
+		redirect('payables/process');
 	}
 
 	public function transaction()
 	{
 		try {
+		#check if the payable_status have a value
+		$query = $this->db->query("SELECT * FROM payables_status");
+		$p_status = $query->result();
+
+
 		$query = $this->db->query("SELECT po_no, new_amount from payables_status  where status = 1");
 		$res = $query->result();
 		$po = array();
@@ -320,6 +202,7 @@ class Payables extends CI_Controller {
 
 		$this->dbh = new PDO($this->ConnectionString(),"","");
 
+			#Check if the query is empty
 			if(!empty($po))
 			{
 				$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
@@ -330,10 +213,11 @@ class Payables extends CI_Controller {
 				$statement = $this->dbh->prepare($query);
 				$statement->execute();
 				$result  = $statement->fetchAll();
-
+				$data['count_status'] = $p_status;
 				$data['amount'] = $amt;
 				$data['transaction'] = $result;	
 			}
+				$data['count_status'] = $p_status;
 				$data['pagetitle'] = 'Exception';
 				$this->load->view('templates/transaction', $data);	
 		} catch (Exception $e) {
@@ -343,6 +227,7 @@ class Payables extends CI_Controller {
 
 	public function postException()
 	{
+		#redirect to model with a function mod_exception
 		$this->search_model->mod_exception();
 		$this->session->set_flashdata("message", "Exported Successfully!");
 		redirect('payables/transaction');
@@ -350,6 +235,7 @@ class Payables extends CI_Controller {
 
 	public function salesaudit()
 	{
+		#check if the user has logged in
 		if (!$this->session->userdata('fm_username'))
 		{
 			redirect('payables/login');
@@ -362,6 +248,7 @@ class Payables extends CI_Controller {
 
 	public function filter_salesaudit()
 	{
+		#convert date to YY/MM/DD
 		$date = $this->input->post('datefilter');
 		$date = new DateTime($this->input->post('datefilter'));
 		$format_date_from = $date->format("ymd");
@@ -382,6 +269,7 @@ class Payables extends CI_Controller {
 
 	public function filter_consignment()
 	{
+		#convert date to YY/MM/DD
 		$date = new DateTime($this->input->post('datefilter1'));
 		$format_date_from = $date->format("ymd");
 		$frmt_date_from = "$format_date_from"; 
@@ -397,7 +285,7 @@ class Payables extends CI_Controller {
 		$this->load->view('templates/consignment', $data);
 	}
 
-	public function fdate()
+	public function fdate($date1)
 	{
 		$len=strlen($date1);
 		if($len < 4 or $len == 0 or $date1 == "")
@@ -416,6 +304,27 @@ class Payables extends CI_Controller {
 			$yr=$yr+2000;
 			}
 		$ret_str="$yr-$mo-$day";
+		return $ret_str;
+	}
+
+	public function fmonth($date){
+			$len=strlen($date1);
+		if($len < 4 or $len == 0 or $date1 == "")
+			return 0;
+		$day=substr($date1,$len-2,2);
+		$mo=substr($date1,$len-4,2);
+		if($len==5)
+			$yr="0" . substr($date1,0,1);
+		elseif($len==4)
+			$yr="00";
+		else
+			$yr=substr($date1,0,2);
+			if($yr >= 80){
+			$yr=$yr+1900;
+			}else{
+			$yr=$yr+2000;
+			}
+		$ret_str="$mo";
 		return $ret_str;
 	}
 

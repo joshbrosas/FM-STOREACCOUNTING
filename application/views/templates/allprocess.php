@@ -8,7 +8,7 @@
         <?php } ?>
 
 <table class="table table-bordered" style="font-size: 11px">
-    <thead style="font-size: 11px">
+    <thead style="font-size: 12px">
       <tr>
         <th>PO NO.</th>
         <th>RCR NO.</th>
@@ -42,9 +42,12 @@
 <td colspan="9"><div class="alert alert-success" style="margin-bottom:0px;font-size:12px">No Records found.</div></td>
 <?php } ?>
   </table>
+  <?php if(count($count_status) != 0){ ?>
   <form method="post" action="<?php echo site_url('payables/postMatched')?>">
     <button type="submit" class="btn btn-success btn-circle btn-lg pull-right" title="Process SAP File" style="padding:0px;z-index: 9999999;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 -moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa fa-file"></i></button>
 </form>
+<?php } ?>
+
 <?php $this->load->view('main/footer'); ?>

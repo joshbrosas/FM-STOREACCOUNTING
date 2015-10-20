@@ -28,13 +28,6 @@ class Search_model extends CI_Model {
 	public function mod_matched()
 	{
 
-		echo "xxxa";
-		
-		
-	}
-
-	public function mod_exception()
-	{
 		set_time_limit(0);
 		$query = $this->db->query("SELECT po_no, new_amount from payables_status  where status = 1");
 		$res = $query->result();
@@ -67,49 +60,301 @@ class Search_model extends CI_Model {
 		
 			$statement = $this->dbh->prepare($query);
 			$statement->execute();
-			$result  = $statement->fetchAll();
-
-			$output_dir="csv.docs\\";
-			$todayz=date("mdY",strtotime('+8 hours'));
-			$filename = "TWOWAYPROCESS_"."$todayz".".csv";
-			$dataFile = fopen($output_dir.$filename,'w');
-			fputs($dataFile,"\"IND\",\"BLDAT\",\"BLART\",\"BUKRS\",\"BUDAT\",\"MONAT\",\"WAERS\",\"KURSF\",\"XBLNR\",\"SGTXT\",\"CTAX\",\"BSCHL\",\"HKONT\",\"DMBTR\",\"WMBTR\",\"PRCTR\",\"ZUONR\",\"HBNK\",\"ACCID\",\"MWSKZ\",\"VALDT\",\"ITTXT\",\"KOSTL\",\"WBSEL\",\"UMSKZ\"\n");
+			$result_get_po  = $statement->fetchAll();
 
 			$poimplode = implode(',', $getallpo);
 			$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
-			foreach ($result as $value) {
-
-				$ind   = "";
-				$bldat = "";
-				$blart = "";
-				$bukrs = "";
-				$budat = $value['PORDAT'];
-				$monat = "";
-				$waers = "";
-				$kursf = "";
-				$xblnr = "";
-				$sgtxt = "";
-				$ctax  = "";
-				$bschl = "";
-				$hkont = "";
-				$dmbtr = "";
-				$wmbtr = "";
-				$prctr = "";
-				$zuonr = "";
-				$hbnk  = "";
-				$accid = "";
-				$mwskz = "";
-				$valdt = "";
-				$ittxt = "";
-				$kostl = "";
-				$wbsel = "";
-				$umskz = "";
 			
-			fputs($dataFile,"\"$ind\",\"$bldat\",\"$blart\",\"$bukrs\",\"$budat\",\"$monat\",\"$waers\",\"$kursf\",\"$xblnr\",\"$sgtxt\",\"$ctax\",\"$bschl\",\"$hkont\",\"$dmbtr\",\"$wmbtr\",\"$prctr\",\"$zuonr\",\"$hbnk\",\"$accid\",\"$mwskz\",\"$valdt\",\"$ittxt\",\"$kostl\",\"$wbsel\",\"$umskz\"\n");
+
+		$store['00001']="R1000001";
+		$store['00002']="R1000002";
+		$store['00003']="R1000003";
+		$store['00004']="R1000004";
+		$store['00005']="R1000005";
+		$store['00006']="R1000006";
+		$store['00007']="R1000007";
+		$store['00008']="R1000008";
+		$store['00009']="R1000009";
+		$store['00010']="R1000010";
+		$store['20']="R2211022";
+		$store['9005']="R1009005";
+
+	
+		$today=date("Ymd");
+			
+		$output_dir="csv.docs\\";
+		// open a datafile
+		$filename = "SAP_INV"."$today".".csv";
+		$dataFile = fopen($output_dir.$filename,'w');
+		$datetrnx=str_replace("-","",$datex);
+
+		fputs($dataFile,"IND, BLDAT, BLART, BUKRS,BUDAT,MONAT,WAERS,KURSF,XBLNR,SGTXT,CTAX,BSCHL,HKONT,DMBTR,WMBTR,PRCTR,ZUONR,HBNK,ACCID,MWSKZ,VALDT,ITTXT,KOSTL,WBSEL,UMSKZ\n");
+		#fputs($dataFile,"Indicator,Document Date,Document Type,Company Code,Posting Date,Fiscal Period,Currency Key,Exchange Rate,Reference Document Number,Document Header Text,Calculate tax,Posting Key,Account, Amount in document currency ,Amount in local currency,Profit Center,Assignment Number,House Bank,Account ID ,Tax Code,Value Date,Item Text,Cost Center,WBS Element,Special GL\n");
+		foreach ($result_get_po as $value) {
+
+			$budat = $value['PORDAT'];
+			$timestamp = strtotime($this->fdate($budat));
+			$month = date('n', $timestamp);
+
+			$timestamp = strtotime($this->fdate($budat));
+			$year = date('Ymd', $timestamp);
+			
+		$this->dbh = new PDO($this->connectionString(),"","");
+	 	$query = "select poladg,pomrcv from MMFMSLIB.POMRCH where pordat={$budat} and postat=6";
+		$statement = $this->dbh->prepare($query);
+		$statement->execute();
+		$result  = $statement->fetchAll();
+
+		foreach ($result as $key => $value) {
+			
+			$invoice = $value['POLADG'];
+			$porcv  = $value['POMRCV'];
+			$fiscalx = $month;
+			$datetrn = $year;
+		fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,$filename,Invoices for the Day - $invoice ,X\n");
+
+
+		$this->dbh = new PDO($this->connectionString(),"","");
+	 	$query = "select povnum,poladg,porvcs,poloc,ponumb from MMFMSLIB.POMRCH where pomrcv=$porcv";
+		$statement = $this->dbh->prepare($query);
+		$statement->execute();
+		$result2  = $statement->fetchAll();
+
+			foreach ($result2 as $key => $valuex) {
+					
+					$venfsp = $valuex['POVNUM'];
+
+				$this->dbh = new PDO($this->connectionString(),"","");
+			 	$query = "select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
+
+				$statement = $this->dbh->prepare($query);
+				$statement->execute();
+				$result3  = $statement->fetchAll();		
+				
+				foreach ($result3 as $key => $valuexx) {
+
+					$vatflag = $valuexx['ASTAXC'];
+					$venname = $valuexx['ASNAME'];
+					
+					$vendormap = $this->db->query("SELECT * FROM vendormap where fspvencode= {$venfsp} ");
+					foreach ($vendormap->result_array() as $row)
+					{
+					   $sapven = $row['sapvencode'];
+					   $merch= $valuex['PORVCS'];
+					   $storecd=$valuex['POLOC'];
+					   $ponumber=$valuex['PONUMB'];
+					   $cstcenter=$store["$storecd"];
+						//$datetrnz=str_replace("-","",$row["mydate"]);
+
+						//$len=strlen($datetrnz);
+						//if($len < 4 or $len == 0 or $datetrnz == "")
+						//	return 0;
+						//$yy=substr($datetrnz,$len-4,4);
+						//$mo=substr($datetrnz,$len-6,2);
+						//$day=substr($datetrnz,$len-8,2);
+
+				$datetrnx="20$datex";
+
+				if ($vatflag =='N') {
+
+						$suppamt=0;
+						$vatamt=$merch * .12;
+						$totpo=$merch;
+						$totpox=$merch;
+
+				}else{
+
+						$suppamt=0;
+						$totpo=$merch / 1.12;
+						$vatamt=$merch - $totpo;
+						$totpox=$merch;
+				}
+
+				//insert all 40  - DR
+
+				            fputs($dataFile,"2,,,,,,,,,,,40,51012101,$merch,$merch,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
+				            fputs($dataFile,"2,,,,,,,,,,,40,11954101,$vatamt,$vatamt,$cstcenter,$ponumber,,,,,,,,\n");
+				//            fputs($dataFile,"2,,,,,,,,,,,40,11401102,$suppamt,$suppamt,$cstcenter,$datetrnx,,,,,,,,\n");
+
+				//insert all 31  - CR
+
+							fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
+
+					}
+
+				}
+				}	
+
+		}
+		}
+		
+		
+	}
+
+	public function mod_exception()
+	{
+		set_time_limit(0);
+
+		$query = $this->db->query("SELECT po_no, new_amount from payables_status  where status = 1");
+		$res = $query->result();
+
+			$po = array();
+			$amount = array();
+
+			foreach ($res as $key => $ponumb) 
+			{
+				$po[] =  $ponumb->po_no;
+				$amt[] =  $ponumb->new_amount;
+			}
+
+			$query = $this->db->query("SELECT po_no from payables_status");
+			$res = $query->result();
+			$getallpo = array();
+
+			foreach ($res as $key => $ponumb)
+		 	 {
+			   $getallpo[] =  $ponumb->po_no;
+			 }
+
+			$this->dbh = new PDO($this->connectionString(),"","");
+
+		
+			$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
+                      from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
+                      where ponumb in('.implode(',', $getallpo).')
+                      order by ponumb desc ';	
+		
+			$statement = $this->dbh->prepare($query);
+			$statement->execute();
+			$result_get_po  = $statement->fetchAll();
+
+			$poimplode = implode(',', $getallpo);
+			$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
+			
+
+		$store['00001']="R1000001";
+		$store['00002']="R1000002";
+		$store['00003']="R1000003";
+		$store['00004']="R1000004";
+		$store['00005']="R1000005";
+		$store['00006']="R1000006";
+		$store['00007']="R1000007";
+		$store['00008']="R1000008";
+		$store['00009']="R1000009";
+		$store['00010']="R1000010";
+		$store['20']="R2211022";
+		$store['9005']="R1009005";
+
+	
+		$today=date("Ymd");
+			
+		$output_dir="csv.docs\\";
+		// open a datafile
+		$filename = "SAP_INV"."$today".".csv";
+		$dataFile = fopen($output_dir.$filename,'w');
+		$datetrnx=str_replace("-","",$datex);
+
+		fputs($dataFile,"IND, BLDAT, BLART, BUKRS,BUDAT,MONAT,WAERS,KURSF,XBLNR,SGTXT,CTAX,BSCHL,HKONT,DMBTR,WMBTR,PRCTR,ZUONR,HBNK,ACCID,MWSKZ,VALDT,ITTXT,KOSTL,WBSEL,UMSKZ\n");
+		#fputs($dataFile,"Indicator,Document Date,Document Type,Company Code,Posting Date,Fiscal Period,Currency Key,Exchange Rate,Reference Document Number,Document Header Text,Calculate tax,Posting Key,Account, Amount in document currency ,Amount in local currency,Profit Center,Assignment Number,House Bank,Account ID ,Tax Code,Value Date,Item Text,Cost Center,WBS Element,Special GL\n");
+		foreach ($result_get_po as $value) {
+
+			$budat = $value['PORDAT'];
+			$timestamp = strtotime($this->fdate($budat));
+			$month = date('n', $timestamp);
+
+			$timestamp = strtotime($this->fdate($budat));
+			$year = date('Ymd', $timestamp);
+			
+		$this->dbh = new PDO($this->connectionString(),"","");
+	 	$query = "select poladg,pomrcv from MMFMSLIB.POMRCH where pordat={$budat} and postat=6";
+		$statement = $this->dbh->prepare($query);
+		$statement->execute();
+		$result  = $statement->fetchAll();
+
+		foreach ($result as $key => $value) {
+			
+			$invoice = $value['POLADG'];
+			$porcv  = $value['POMRCV'];
+			$fiscalx = $month;
+			$datetrn = $year;
+		fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,$filename,Invoices for the Day - $invoice ,X\n");
+
+
+		$this->dbh = new PDO($this->connectionString(),"","");
+	 	$query = "select povnum,poladg,porvcs,poloc,ponumb from MMFMSLIB.POMRCH where pomrcv=$porcv";
+		$statement = $this->dbh->prepare($query);
+		$statement->execute();
+		$result2  = $statement->fetchAll();
+
+			foreach ($result2 as $key => $valuex) {
+					
+					$venfsp = $valuex['POVNUM'];
+
+				$this->dbh = new PDO($this->connectionString(),"","");
+			 	$query = "select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
+
+				$statement = $this->dbh->prepare($query);
+				$statement->execute();
+				$result3  = $statement->fetchAll();		
+				
+				foreach ($result3 as $key => $valuexx) {
+
+					$vatflag = $valuexx['ASTAXC'];
+					$venname = $valuexx['ASNAME'];
+					
+					$vendormap = $this->db->query("SELECT * FROM vendormap where fspvencode= {$venfsp} ");
+					foreach ($vendormap->result_array() as $row)
+					{
+					   $sapven = $row['sapvencode'];
+					   $merch= $valuex['PORVCS'];
+					   $storecd=$valuex['POLOC'];
+					   $ponumber=$valuex['PONUMB'];
+					   $cstcenter=$store["$storecd"];
+						//$datetrnz=str_replace("-","",$row["mydate"]);
+
+						//$len=strlen($datetrnz);
+						//if($len < 4 or $len == 0 or $datetrnz == "")
+						//	return 0;
+						//$yy=substr($datetrnz,$len-4,4);
+						//$mo=substr($datetrnz,$len-6,2);
+						//$day=substr($datetrnz,$len-8,2);
+
+				$datetrnx="20$datex";
+
+				if ($vatflag =='N') {
+
+						$suppamt=0;
+						$vatamt=$merch * .12;
+						$totpo=$merch;
+						$totpox=$merch;
+
+				}else{
+
+						$suppamt=0;
+						$totpo=$merch / 1.12;
+						$vatamt=$merch - $totpo;
+						$totpox=$merch;
+				}
+
+				//insert all 40  - DR
+
+				            fputs($dataFile,"2,,,,,,,,,,,40,51012101,$merch,$merch,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
+				            fputs($dataFile,"2,,,,,,,,,,,40,11954101,$vatamt,$vatamt,$cstcenter,$ponumber,,,,,,,,\n");
+				//            fputs($dataFile,"2,,,,,,,,,,,40,11401102,$suppamt,$suppamt,$cstcenter,$datetrnx,,,,,,,,\n");
+
+				//insert all 31  - CR
+
+							fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
+
+					}
+
+				}
+				}	
+
+		}
 		}
 			
 	}
-
 
 	public function mod_payables($date)
 	{
@@ -121,7 +366,8 @@ class Search_model extends CI_Model {
 			$po[] =  $ponumb->po_no;
 		}
 
-		$this->dbh = new PDO($this->connectionString(),"","");
+		if(count($res)!= 0){
+			$this->dbh = new PDO($this->connectionString(),"","");
 
 		$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
                   from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
@@ -131,6 +377,18 @@ class Search_model extends CI_Model {
 		$statement->execute();
 		$result  = $statement->fetchAll();
 		return $result;
+	}else{
+		$this->dbh = new PDO($this->connectionString(),"","");
+
+		$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
+                  from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
+                  where pordat = '.$date.'
+                  order by ponumb desc';	
+		$statement = $this->dbh->prepare($query);
+		$statement->execute();
+		$result  = $statement->fetchAll();
+		return $result;
+	}	
 	}
 
 	public function consignment($datefrom, $dateto)
