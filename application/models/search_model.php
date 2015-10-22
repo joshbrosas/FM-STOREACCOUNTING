@@ -84,7 +84,8 @@ class Search_model extends CI_Model {
 			
 		$output_dir="csv.docs\\";
 		// open a datafile
-		$filename = "SAP_INV"."$today".".csv";
+		$i = $i + 1;
+		$filename = "$today-".$i.".csv";
 		$dataFile = fopen($output_dir.$filename,'w');
 		$datetrnx=str_replace("-","",$datex);
 
@@ -242,15 +243,16 @@ class Search_model extends CI_Model {
 		$store['00008']="R1000008";
 		$store['00009']="R1000009";
 		$store['00010']="R1000010";
-		$store['20']="R2211022";
-		$store['9005']="R1009005";
+		$store['20']   ="R2211022";
+		$store['9005'] ="R1009005";
 
 	
 		$today=date("Ymd");
 			
 		$output_dir="csv.docs\\";
 		// open a datafile
-		$filename = "SAP_INV"."$today".".csv";
+		$i = $i + 1;
+		$filename = "$today-".$i.".csv";
 		$dataFile = fopen($output_dir.$filename,'w');
 		$datetrnx=str_replace("-","",$datex);
 
@@ -258,10 +260,12 @@ class Search_model extends CI_Model {
 		#fputs($dataFile,"Indicator,Document Date,Document Type,Company Code,Posting Date,Fiscal Period,Currency Key,Exchange Rate,Reference Document Number,Document Header Text,Calculate tax,Posting Key,Account, Amount in document currency ,Amount in local currency,Profit Center,Assignment Number,House Bank,Account ID ,Tax Code,Value Date,Item Text,Cost Center,WBS Element,Special GL\n");
 		foreach ($result_get_po as $value) {
 
+			#convert to numeric month
 			$budat = $value['PORDAT'];
 			$timestamp = strtotime($this->fdate($budat));
 			$month = date('n', $timestamp);
 
+			#convert to YYYY/mm/dd
 			$timestamp = strtotime($this->fdate($budat));
 			$year = date('Ymd', $timestamp);
 			
@@ -277,11 +281,12 @@ class Search_model extends CI_Model {
 			$porcv  = $value['POMRCV'];
 			$fiscalx = $month;
 			$datetrn = $year;
-		fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,$filename,Invoices for the Day - $invoice ,X\n");
+			fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,$filename,Invoices for the Day - $invoice ,X\n");
 
 
 		$this->dbh = new PDO($this->connectionString(),"","");
 	 	$query = "select povnum,poladg,porvcs,poloc,ponumb from MMFMSLIB.POMRCH where pomrcv=$porcv";
+	
 		$statement = $this->dbh->prepare($query);
 		$statement->execute();
 		$result2  = $statement->fetchAll();
@@ -345,12 +350,10 @@ class Search_model extends CI_Model {
 				//insert all 31  - CR
 
 							fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
-
 					}
 
 				}
 				}	
-
 		}
 		}
 			
@@ -377,7 +380,9 @@ class Search_model extends CI_Model {
 		$statement->execute();
 		$result  = $statement->fetchAll();
 		return $result;
-	}else{
+		}
+		else
+		{
 		$this->dbh = new PDO($this->connectionString(),"","");
 
 		$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
@@ -408,6 +413,35 @@ class Search_model extends CI_Model {
 		return $result;		  
 	}
 
+	public function exportConsignment($datefrom, $dateto)
+	{
+		$this->dbh = new PDO($this->connectionString(),"","");
+		$query = "select c.asname as vendor,sum(a.csexpr) as totalsales 
+				 from MMFMSLIB.cshdet a inner join MMFMSLIB.invmst b
+				  on a.cssku=b.inumbr inner join MMFMSLIB.apsupp c 
+				  on c.asnum=b.asnum where a.cscen=1 and csdate 
+				  between {$datefrom} and {$dateto} and b.istype='CC' 
+				  group by c.asname";
+				  
+		$statement = $this->dbh->prepare($query);
+		$statement->execute();
+		$result  = $statement->fetchAll();
+
+		$today=date("Ymd");
+			
+		$output_dir="csv.docs\\";
+		// open a datafile
+		$filename = "CONSIGNMENTSALES_"."$today".".csv";
+		$dataFile = fopen($output_dir.$filename,'w');
+
+		fputs($dataFile,"VENDOR,TOTALSALES\n");
+		foreach ($result as $key => $value) {
+			$vendor = trim($value['VENDOR']);
+			$t_sales = $value['TOTALSALES'];
+			fputs($dataFile,"\"$vendor\",\"$t_sales\"\n");
+		}
+	}
+
 	public function fdate($date1)
 	{
 	$len=strlen($date1);
@@ -429,7 +463,4 @@ class Search_model extends CI_Model {
 	$ret_str="$yr-$mo-$day";
 	return $ret_str;
 	}
-
-
-
 }

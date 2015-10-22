@@ -17,6 +17,12 @@
 
 <div class="row">
 <div class="col-md-offset-1 col-md-9">
+  <?php if($this->session->flashdata('message') != ''){ ?>
+  <div class="alert alert-success alert-dismissible" role="alert" id="alertclose">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong><i class="fa fa-file"></i> <?php echo $this->session->flashdata("message"); ?></strong>
+</div>
+<?php } ?>
 <table class="table table-bordered table-hover" style="font-size: 12px">
 	<thead style="font-size: 11px">
       <tr>
@@ -36,6 +42,10 @@
     <?php } ?> 
 </table>
 </div>	
-
+  <?php if(isset($result)){ ?>
+    <button type="submit" name="btnexport" value="export" data-toggle="modal" data-target="#myModal" class="btn btn-success btn-circle btn-xl pull-right" title="Export to CSV" style="padding:0px;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa fa-file-excel-o"></i></button>
+    <?php } ?>
 </form>
 <?php $this->load->view('main/footer'); ?>

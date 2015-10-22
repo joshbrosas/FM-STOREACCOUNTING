@@ -28,11 +28,12 @@
             <td class="col-md-1" style="text-align: right"><?php echo number_format($values['00003'], 0); ?></td>
             <td class="col-md-1" style="text-align: right"><?php echo number_format($values['00004'], 0); ?></td>
             <td class="col-md-1" style="text-align: right"><?php echo number_format($values['00005'], 0); ?></td>
+  
             <td class="col-md-1"><input type="checkbox" name="selector[]" id="" class="control-label" value=""></td>
           </tr>
         <?php } ?>
     <?php }else{ ?>
-    <td colspan="6"><div class="alert alert-success" style="margin-bottom: 0px">Please select date.</div></td>
+    <td colspan="7"><div class="alert alert-success" style="margin-bottom: 0px">Please select date.</div></td>
     <?php } ?> 
 </table>
  <!--  <button type="submit" class="btn btn-success btn-circle btn-lg pull-right" id="btn_sales" title="Export to CSV" style="padding:0px;z-index: 9999999;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);

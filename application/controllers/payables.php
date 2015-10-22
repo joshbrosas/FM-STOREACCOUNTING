@@ -37,7 +37,7 @@ class Payables extends CI_Controller {
 			$this->db->where('password', md5($jda_password));  
 			$query = $this->db->get('payables_login');
 			
-			if($query->num_rows() == 1)
+				if($query->num_rows() == 1)
 			{
 				$userinfo = $this->db->query("SELECT * FROM payables_login WHERE username = '{$jda_username}' AND password = md5($jda_password)");
 				$user_result = $userinfo->result();
@@ -262,14 +262,15 @@ class Payables extends CI_Controller {
 
 	public function consignment()
 	{
-		
 		$data['pagetitle'] = 'Consignment Sales';
 		$this->load->view('templates/consignment', $data);
 	}
 
 	public function filter_consignment()
 	{
-		#convert date to YY/MM/DD
+		
+		$action = $this->input->post('btnexport');
+
 		$date = new DateTime($this->input->post('datefilter1'));
 		$format_date_from = $date->format("ymd");
 		$frmt_date_from = "$format_date_from"; 
@@ -280,9 +281,21 @@ class Payables extends CI_Controller {
 		$frmt_date_from = "$format_date_from"; 
 		$dateto =  $frmt_date_from;
 
+		if($action == 'export')
+		{
+			$this->search_model->exportConsignment($datefrom, $dateto);
+			$data['pagetitle'] = 'Consignment Sales';
+			$this->session->set_flashdata('message', 'Exported Successfully!');
+			redirect('payables/consignment');
+		}
+
+		#convert date to YY/MM/DD
+		
 		$data['result']	   = $this->search_model->consignment($datefrom, $dateto);
 		$data['pagetitle'] = 'Consignment Sales';
 		$this->load->view('templates/consignment', $data);
+
+
 	}
 
 	public function fdate($date1)
