@@ -10,6 +10,11 @@ class Search_model extends CI_Model {
 				"UID=DCLACAP; ".
 				"PWD=PASSWORD";
 	}
+	public function odbcConnect()
+	{
+		$as400 = odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'M@nager3971') or die('error');
+
+	}
 
 	public function getResult($search)
 	{	
@@ -106,13 +111,19 @@ class Search_model extends CI_Model {
 		$statement->execute();
 		$result  = $statement->fetchAll();
 
+		$counter = 0;
 		foreach ($result as $key => $value) {
 			
+			$counter++;
+
 			$invoice = $value['POLADG'];
 			$porcv  = $value['POMRCV'];
 			$fiscalx = $month;
 			$datetrn = $year;
-		fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,$filename,Invoices for the Day - $invoice ,X\n");
+			$xblnr = substr($filename,0, -6);
+			$sgtxt = substr($filename,0, -6);
+			$xxx = $counter;
+		fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,Invoice-$xblnr,$sgtxt-$xxx,X\n");
 
 
 		$this->dbh = new PDO($this->connectionString(),"","");
@@ -173,13 +184,13 @@ class Search_model extends CI_Model {
 
 				//insert all 40  - DR
 
-				            fputs($dataFile,"2,,,,,,,,,,,40,51012101,$merch,$merch,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
+				            fputs($dataFile,"2,,,,,,,,,,,40,51012101,$merch,$merch,$cstcenter,$ponumber,,,,,,$cstcenter,,\n");
 				            fputs($dataFile,"2,,,,,,,,,,,40,11954101,$vatamt,$vatamt,$cstcenter,$ponumber,,,,,,,,\n");
 				//            fputs($dataFile,"2,,,,,,,,,,,40,11401102,$suppamt,$suppamt,$cstcenter,$datetrnx,,,,,,,,\n");
 
 				//insert all 31  - CR
 
-							fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
+							fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,,,,$cstcenter,,\n");
 
 					}
 
