@@ -12,8 +12,7 @@ class Search_model extends CI_Model {
 	}
 	public function odbcConnect()
 	{
-		$as400 = odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'M@nager3971') or die('error');
-
+		return odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'PASSWORD') or die('error');
 	}
 
 	public function getResult($search)
@@ -89,13 +88,13 @@ class Search_model extends CI_Model {
 			
 		$output_dir="csv.docs\\";
 		// open a datafile
-		$i = $i + 1;
+		$i = '001';
 		$filename = "$today-".$i.".csv";
 		$dataFile = fopen($output_dir.$filename,'w');
 		$datetrnx=str_replace("-","",$datex);
-
+		$AS400 = odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'PASSWORD');
 		fputs($dataFile,"IND, BLDAT, BLART, BUKRS,BUDAT,MONAT,WAERS,KURSF,XBLNR,SGTXT,CTAX,BSCHL,HKONT,DMBTR,WMBTR,PRCTR,ZUONR,HBNK,ACCID,MWSKZ,VALDT,ITTXT,KOSTL,WBSEL,UMSKZ\n");
-		#fputs($dataFile,"Indicator,Document Date,Document Type,Company Code,Posting Date,Fiscal Period,Currency Key,Exchange Rate,Reference Document Number,Document Header Text,Calculate tax,Posting Key,Account, Amount in document currency ,Amount in local currency,Profit Center,Assignment Number,House Bank,Account ID ,Tax Code,Value Date,Item Text,Cost Center,WBS Element,Special GL\n");
+		$counter = 0;
 		foreach ($result_get_po as $value) {
 
 			$budat = $value['PORDAT'];
@@ -105,103 +104,100 @@ class Search_model extends CI_Model {
 			$timestamp = strtotime($this->fdate($budat));
 			$year = date('Ymd', $timestamp);
 			
-		$this->dbh = new PDO($this->connectionString(),"","");
-	 	$query = "select poladg,pomrcv from MMFMSLIB.POMRCH where pordat={$budat} and postat=6";
-		$statement = $this->dbh->prepare($query);
-		$statement->execute();
-		$result  = $statement->fetchAll();
+		$sql_str="select poladg,pomrcv from MMFMSLIB.POMRCH where pordat=$budat and postat=6";
 
-		$counter = 0;
-		foreach ($result as $key => $value) {
-			
-			$counter++;
 
-			$invoice = $value['POLADG'];
-			$porcv  = $value['POMRCV'];
+	 	    $details = odbc_exec($AS400,$sql_str);
+	 		while (odbc_fetch_row($details)) {
+
+	 		$invoice= odbc_result($details,1);
+	 		$porcv= odbc_result($details,2);
+
 			$fiscalx = $month;
 			$datetrn = $year;
-			$xblnr = substr($filename,0, -6);
-			$sgtxt = substr($filename,0, -6);
+			$xblnr = substr($filename,0, -8);
+			$sgtxt = substr($filename,0, -8);
 			$xxx = $counter;
-		fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,Invoice-$xblnr,$sgtxt-$xxx,X\n");
+
+		fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,R400000$xblnr,$sgtxt-001,X\n");
 
 
-		$this->dbh = new PDO($this->connectionString(),"","");
-	 	$query = "select povnum,poladg,porvcs,poloc,ponumb from MMFMSLIB.POMRCH where pomrcv=$porcv";
-		$statement = $this->dbh->prepare($query);
-		$statement->execute();
-		$result2  = $statement->fetchAll();
+		$sqlStr="select povnum,poladg,porvcs,poloc,ponumb from MMFMSLIB.POMRCH where pomrcv=$porcv";
 
-			foreach ($result2 as $key => $valuex) {
-					
-					$venfsp = $valuex['POVNUM'];
 
-				$this->dbh = new PDO($this->connectionString(),"","");
-			 	$query = "select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
+	 	    $detailx= odbc_exec($AS400,$sqlStr);
+	 		while (odbc_fetch_row($detailx)) {
 
-				$statement = $this->dbh->prepare($query);
-				$statement->execute();
-				$result3  = $statement->fetchAll();		
-				
-				foreach ($result3 as $key => $valuexx) {
+		$venfsp=odbc_result($detailx,1);
 
-					$vatflag = $valuexx['ASTAXC'];
-					$venname = $valuexx['ASNAME'];
-					
-					$vendormap = $this->db->query("SELECT * FROM vendormap where fspvencode= {$venfsp} ");
-					foreach ($vendormap->result_array() as $row)
-					{
-					   $sapven = $row['sapvencode'];
-					   $merch= $valuex['PORVCS'];
-					   $storecd=$valuex['POLOC'];
-					   $ponumber=$valuex['PONUMB'];
-					   $cstcenter=$store["$storecd"];
-						//$datetrnz=str_replace("-","",$row["mydate"]);
+		$sqlStrv="select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
+	 	    $detailv= odbc_exec($AS400,$sqlStrv);
+	 		odbc_fetch_row($detailv);
 
-						//$len=strlen($datetrnz);
-						//if($len < 4 or $len == 0 or $datetrnz == "")
-						//	return 0;
-						//$yy=substr($datetrnz,$len-4,4);
-						//$mo=substr($datetrnz,$len-6,2);
-						//$day=substr($datetrnz,$len-8,2);
+		$vatflag=odbc_result($detailv,3);
+		$venname=odbc_result($detailv,2);
+		//$sapven=odbc_result($detailv,1)+ 60000000;
 
-				$datetrnx="20$datex";
 
-				if ($vatflag =='N') {
+$db1 = mysqli_connect('localhost', 'root', '', 'payables_db');
 
-						$suppamt=0;
-						$vatamt=$merch * .12;
-						$totpo=$merch;
-						$totpox=$merch;
+$sql = "SELECT * FROM vendormap where fspvencode=$venfsp";
+$results = mysqli_query($db1, $sql)or die("MySQL error: " . mysqli_error($db1) . "<hr>\nQuery: $sql");  ;
 
-				}else{
+		$row_vlist = mysqli_fetch_array($results,MYSQLI_ASSOC);
+		$sapven=$row_vlist['sapvencode'];
 
-						$suppamt=0;
-						$totpo=$merch / 1.12;
-						$vatamt=$merch - $totpo;
-						$totpox=$merch;
-				}
+		$merch=odbc_result($detailx,3);
+		$storecd=odbc_result($detailx,4);
+		$ponumber=odbc_result($detailx,5);
+		@$cstcenter=$store["$storecd"];
+		//$datetrnz=str_replace("-","",$row["mydate"]);
 
-				//insert all 40  - DR
+		//$len=strlen($datetrnz);
+		//if($len < 4 or $len == 0 or $datetrnz == "")
+		//	return 0;
+		//$yy=substr($datetrnz,$len-4,4);
+		//$mo=substr($datetrnz,$len-6,2);
+		//$day=substr($datetrnz,$len-8,2);
 
-				            fputs($dataFile,"2,,,,,,,,,,,40,51012101,$merch,$merch,$cstcenter,$ponumber,,,,,,$cstcenter,,\n");
-				            fputs($dataFile,"2,,,,,,,,,,,40,11954101,$vatamt,$vatamt,$cstcenter,$ponumber,,,,,,,,\n");
-				//            fputs($dataFile,"2,,,,,,,,,,,40,11401102,$suppamt,$suppamt,$cstcenter,$datetrnx,,,,,,,,\n");
+		$datetrnx="20$datex";
 
-				//insert all 31  - CR
+if ($vatflag =='N') {
 
-							fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,,,,$cstcenter,,\n");
+		$suppamt=0;
+		$vatamt=$merch * .12;
+		$totpo=$merch;
+		$totpox=$merch;
 
-					}
+}else{
 
-				}
-				}	
+		$suppamt=0;
+		$totpo=$merch / 1.12;
+		$vatamt=$merch - $totpo;
+		$totpox=$merch;
+}
 
-		}
+//insert all 40  - DR
+
+            fputs($dataFile,"2,,,,,,,,,,,40,51012101,$merch,$merch,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
+            fputs($dataFile,"2,,,,,,,,,,,40,11954101,$vatamt,$vatamt,$cstcenter,$ponumber,,,,,,,,\n");
+//            fputs($dataFile,"2,,,,,,,,,,,40,11401102,$suppamt,$suppamt,$cstcenter,$datetrnx,,,,,,,,\n");
+
+//insert all 31  - CR
+
+			fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
+
+//fputs($dataFile,"</ItemHierarchyView>\n");
+
+		
+
+
 		}
 		
 		
 	}
+}
+}
 
 	public function mod_exception()
 	{
@@ -218,7 +214,6 @@ class Search_model extends CI_Model {
 				$po[] =  $ponumb->po_no;
 				$amt[] =  $ponumb->new_amount;
 			}
-
 			$query = $this->db->query("SELECT po_no from payables_status");
 			$res = $query->result();
 			$getallpo = array();
@@ -254,8 +249,8 @@ class Search_model extends CI_Model {
 		$store['00008']="R1000008";
 		$store['00009']="R1000009";
 		$store['00010']="R1000010";
-		$store['20']   ="R2211022";
-		$store['9005'] ="R1009005";
+		$store['20']="R2211022";
+		$store['9005']="R1009005";
 
 	
 		$today=date("Ymd");
@@ -266,107 +261,112 @@ class Search_model extends CI_Model {
 		$filename = "$today-".$i.".csv";
 		$dataFile = fopen($output_dir.$filename,'w');
 		$datetrnx=str_replace("-","",$datex);
-
+		$AS400 = odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'PASSWORD');
 		fputs($dataFile,"IND, BLDAT, BLART, BUKRS,BUDAT,MONAT,WAERS,KURSF,XBLNR,SGTXT,CTAX,BSCHL,HKONT,DMBTR,WMBTR,PRCTR,ZUONR,HBNK,ACCID,MWSKZ,VALDT,ITTXT,KOSTL,WBSEL,UMSKZ\n");
-		#fputs($dataFile,"Indicator,Document Date,Document Type,Company Code,Posting Date,Fiscal Period,Currency Key,Exchange Rate,Reference Document Number,Document Header Text,Calculate tax,Posting Key,Account, Amount in document currency ,Amount in local currency,Profit Center,Assignment Number,House Bank,Account ID ,Tax Code,Value Date,Item Text,Cost Center,WBS Element,Special GL\n");
+		$counter = 0;
 		foreach ($result_get_po as $value) {
 
-			#convert to numeric month
 			$budat = $value['PORDAT'];
 			$timestamp = strtotime($this->fdate($budat));
 			$month = date('n', $timestamp);
 
-			#convert to YYYY/mm/dd
 			$timestamp = strtotime($this->fdate($budat));
 			$year = date('Ymd', $timestamp);
 			
-		$this->dbh = new PDO($this->connectionString(),"","");
-	 	$query = "select poladg,pomrcv from MMFMSLIB.POMRCH where pordat={$budat} and postat=6";
-		$statement = $this->dbh->prepare($query);
-		$statement->execute();
-		$result  = $statement->fetchAll();
+		$sql_str="select poladg,pomrcv from MMFMSLIB.POMRCH where pordat=$budat and postat=6";
 
-		foreach ($result as $key => $value) {
-			
-			$invoice = $value['POLADG'];
-			$porcv  = $value['POMRCV'];
+
+	 	    $details = odbc_exec($AS400,$sql_str);
+	 		while (odbc_fetch_row($details)) {
+
+	 		$invoice= odbc_result($details,1);
+	 		$porcv= odbc_result($details,2);
+
 			$fiscalx = $month;
 			$datetrn = $year;
-			fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,$filename,Invoices for the Day - $invoice ,X\n");
+			$xblnr = substr($filename,0, -6);
+			$sgtxt = substr($filename,0, -6);
+			$xxx = $counter;
+
+		fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,Invoice-$xblnr,$sgtxt-$invoice,X\n");
 
 
-		$this->dbh = new PDO($this->connectionString(),"","");
-	 	$query = "select povnum,poladg,porvcs,poloc,ponumb from MMFMSLIB.POMRCH where pomrcv=$porcv";
-	
-		$statement = $this->dbh->prepare($query);
-		$statement->execute();
-		$result2  = $statement->fetchAll();
+		$sqlStr="select povnum,poladg,porvcs,poloc,ponumb from MMFMSLIB.POMRCH where pomrcv=$porcv";
 
-			foreach ($result2 as $key => $valuex) {
-					
-					$venfsp = $valuex['POVNUM'];
 
-				$this->dbh = new PDO($this->connectionString(),"","");
-			 	$query = "select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
+	 	    $detailx= odbc_exec($AS400,$sqlStr);
+	 		while (odbc_fetch_row($detailx)) {
 
-				$statement = $this->dbh->prepare($query);
-				$statement->execute();
-				$result3  = $statement->fetchAll();		
-				
-				foreach ($result3 as $key => $valuexx) {
+		$venfsp=odbc_result($detailx,1);
 
-					$vatflag = $valuexx['ASTAXC'];
-					$venname = $valuexx['ASNAME'];
-					
-					$vendormap = $this->db->query("SELECT * FROM vendormap where fspvencode= {$venfsp} ");
-					foreach ($vendormap->result_array() as $row)
-					{
-					   $sapven = $row['sapvencode'];
-					   $merch= $valuex['PORVCS'];
-					   $storecd=$valuex['POLOC'];
-					   $ponumber=$valuex['PONUMB'];
-					   $cstcenter=$store["$storecd"];
-						//$datetrnz=str_replace("-","",$row["mydate"]);
+		$sqlStrv="select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
+	 	    $detailv= odbc_exec($AS400,$sqlStrv);
+	 		odbc_fetch_row($detailv);
 
-						//$len=strlen($datetrnz);
-						//if($len < 4 or $len == 0 or $datetrnz == "")
-						//	return 0;
-						//$yy=substr($datetrnz,$len-4,4);
-						//$mo=substr($datetrnz,$len-6,2);
-						//$day=substr($datetrnz,$len-8,2);
+		$vatflag=odbc_result($detailv,3);
+		$venname=odbc_result($detailv,2);
+		//$sapven=odbc_result($detailv,1)+ 60000000;
 
-				$datetrnx="20$datex";
 
-				if ($vatflag =='N') {
+$db1 = mysqli_connect('localhost', 'root', '', 'payables_db');
 
-						$suppamt=0;
-						$vatamt=$merch * .12;
-						$totpo=$merch;
-						$totpox=$merch;
+$sql = "SELECT * FROM vendormap where fspvencode=$venfsp";
+$results = mysqli_query($db1, $sql)or die("MySQL error: " . mysqli_error($db1) . "<hr>\nQuery: $sql");  ;
 
-				}else{
+		$row_vlist = mysqli_fetch_array($results,MYSQLI_ASSOC);
+		$sapven=$row_vlist['sapvencode'];
 
-						$suppamt=0;
-						$totpo=$merch / 1.12;
-						$vatamt=$merch - $totpo;
-						$totpox=$merch;
-				}
+		$merch=odbc_result($detailx,3);
+		$storecd=odbc_result($detailx,4);
+		$ponumber=odbc_result($detailx,5);
+		@$cstcenter=$store["$storecd"];
+		//$datetrnz=str_replace("-","",$row["mydate"]);
 
-				//insert all 40  - DR
+		//$len=strlen($datetrnz);
+		//if($len < 4 or $len == 0 or $datetrnz == "")
+		//	return 0;
+		//$yy=substr($datetrnz,$len-4,4);
+		//$mo=substr($datetrnz,$len-6,2);
+		//$day=substr($datetrnz,$len-8,2);
 
-				            fputs($dataFile,"2,,,,,,,,,,,40,51012101,$merch,$merch,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
-				            fputs($dataFile,"2,,,,,,,,,,,40,11954101,$vatamt,$vatamt,$cstcenter,$ponumber,,,,,,,,\n");
-				//            fputs($dataFile,"2,,,,,,,,,,,40,11401102,$suppamt,$suppamt,$cstcenter,$datetrnx,,,,,,,,\n");
+		$datetrnx="20$datex";
 
-				//insert all 31  - CR
+if ($vatflag =='N') {
 
-							fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
-					}
+		$suppamt=0;
+		$vatamt=$merch * .12;
+		$totpo=$merch;
+		$totpox=$merch;
 
-				}
-				}	
+}else{
+
+		$suppamt=0;
+		$totpo=$merch / 1.12;
+		$vatamt=$merch - $totpo;
+		$totpox=$merch;
+}
+
+//insert all 40  - DR
+
+            fputs($dataFile,"2,,,,,,,,,,,40,51012101,$merch,$merch,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
+            fputs($dataFile,"2,,,,,,,,,,,40,11954101,$vatamt,$vatamt,$cstcenter,$ponumber,,,,,,,,\n");
+//            fputs($dataFile,"2,,,,,,,,,,,40,11401102,$suppamt,$suppamt,$cstcenter,$datetrnx,,,,,,,,\n");
+
+//insert all 31  - CR
+
+			fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
+
+//fputs($dataFile,"</ItemHierarchyView>\n");
+
+		
+
+
 		}
-		}
+		
+		
+	}
+}
+			
 			
 	}
 
