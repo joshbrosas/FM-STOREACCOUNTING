@@ -91,7 +91,6 @@ class Search_model extends CI_Model {
 		$i = '001';
 		$filename = "$today-".$i.".csv";
 		$dataFile = fopen($output_dir.$filename,'w');
-		$datetrnx=str_replace("-","",$datex);
 		$AS400 = odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'PASSWORD');
 		fputs($dataFile,"IND, BLDAT, BLART, BUKRS,BUDAT,MONAT,WAERS,KURSF,XBLNR,SGTXT,CTAX,BSCHL,HKONT,DMBTR,WMBTR,PRCTR,ZUONR,HBNK,ACCID,MWSKZ,VALDT,ITTXT,KOSTL,WBSEL,UMSKZ\n");
 		$counter = 0;
@@ -115,11 +114,12 @@ class Search_model extends CI_Model {
 
 			$fiscalx = $month;
 			$datetrn = $year;
+			$bldat = date('Ymd');
 			$xblnr = substr($filename,0, -8);
 			$sgtxt = substr($filename,0, -8);
 			$xxx = $counter;
 
-		fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,R400000$xblnr,$sgtxt-001,X\n");
+		fputs($dataFile,"1,$bldat,KR,R400,$datetrn,$fiscalx,PHP,,R400000$xblnr,$sgtxt-$invoice,X\n");
 
 
 		$sqlStr="select povnum,poladg,porvcs,poloc,ponumb from MMFMSLIB.POMRCH where pomrcv=$porcv";
@@ -128,21 +128,21 @@ class Search_model extends CI_Model {
 	 	    $detailx= odbc_exec($AS400,$sqlStr);
 	 		while (odbc_fetch_row($detailx)) {
 
-		$venfsp=odbc_result($detailx,1);
+				$venfsp=odbc_result($detailx,1);
 
-		$sqlStrv="select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
-	 	    $detailv= odbc_exec($AS400,$sqlStrv);
-	 		odbc_fetch_row($detailv);
+				$sqlStrv="select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
+	 	    	$detailv= odbc_exec($AS400,$sqlStrv);
+	 			odbc_fetch_row($detailv);
 
-		$vatflag=odbc_result($detailv,3);
-		$venname=odbc_result($detailv,2);
+				$vatflag=odbc_result($detailv,3);
+				$venname=odbc_result($detailv,2);
 		//$sapven=odbc_result($detailv,1)+ 60000000;
 
 
-$db1 = mysqli_connect('localhost', 'root', '', 'payables_db');
+		$db1 = mysqli_connect('localhost', 'root', '', 'payables_db');
 
-$sql = "SELECT * FROM vendormap where fspvencode=$venfsp";
-$results = mysqli_query($db1, $sql)or die("MySQL error: " . mysqli_error($db1) . "<hr>\nQuery: $sql");  ;
+		$sql = "SELECT * FROM vendormap where fspvencode=$venfsp";
+		$results = mysqli_query($db1, $sql)or die("MySQL error: " . mysqli_error($db1) . "<hr>\nQuery: $sql");  ;
 
 		$row_vlist = mysqli_fetch_array($results,MYSQLI_ASSOC);
 		$sapven=$row_vlist['sapvencode'];
@@ -150,32 +150,23 @@ $results = mysqli_query($db1, $sql)or die("MySQL error: " . mysqli_error($db1) .
 		$merch=odbc_result($detailx,3);
 		$storecd=odbc_result($detailx,4);
 		$ponumber=odbc_result($detailx,5);
-		@$cstcenter=$store["$storecd"];
-		//$datetrnz=str_replace("-","",$row["mydate"]);
-
-		//$len=strlen($datetrnz);
-		//if($len < 4 or $len == 0 or $datetrnz == "")
-		//	return 0;
-		//$yy=substr($datetrnz,$len-4,4);
-		//$mo=substr($datetrnz,$len-6,2);
-		//$day=substr($datetrnz,$len-8,2);
-
+		$cstcenter=$store["$storecd"];
 		$datetrnx="20$datex";
 
-if ($vatflag =='N') {
+		if ($vatflag =='N') {
 
-		$suppamt=0;
-		$vatamt=$merch * .12;
-		$totpo=$merch;
-		$totpox=$merch;
+				$suppamt=0;
+				$vatamt=$merch * .12;
+				$totpo=$merch;
+				$totpox=$merch;
 
-}else{
+		}else{
 
-		$suppamt=0;
-		$totpo=$merch / 1.12;
-		$vatamt=$merch - $totpo;
-		$totpox=$merch;
-}
+				$suppamt=0;
+				$totpo=$merch / 1.12;
+				$vatamt=$merch - $totpo;
+				$totpox=$merch;
+		}
 
 //insert all 40  - DR
 
@@ -186,12 +177,7 @@ if ($vatflag =='N') {
 //insert all 31  - CR
 
 			fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
-
 //fputs($dataFile,"</ItemHierarchyView>\n");
-
-		
-
-
 		}
 		
 		
@@ -235,7 +221,7 @@ if ($vatflag =='N') {
 			$statement->execute();
 			$result_get_po  = $statement->fetchAll();
 
-			$poimplode = implode(',', $getallpo);
+		$poimplode = implode(',', $getallpo);
 			$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
 			
 
@@ -257,10 +243,9 @@ if ($vatflag =='N') {
 			
 		$output_dir="csv.docs\\";
 		// open a datafile
-		$i = $i + 1;
+		$i = '001';
 		$filename = "$today-".$i.".csv";
 		$dataFile = fopen($output_dir.$filename,'w');
-		$datetrnx=str_replace("-","",$datex);
 		$AS400 = odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'PASSWORD');
 		fputs($dataFile,"IND, BLDAT, BLART, BUKRS,BUDAT,MONAT,WAERS,KURSF,XBLNR,SGTXT,CTAX,BSCHL,HKONT,DMBTR,WMBTR,PRCTR,ZUONR,HBNK,ACCID,MWSKZ,VALDT,ITTXT,KOSTL,WBSEL,UMSKZ\n");
 		$counter = 0;
@@ -284,11 +269,12 @@ if ($vatflag =='N') {
 
 			$fiscalx = $month;
 			$datetrn = $year;
-			$xblnr = substr($filename,0, -6);
-			$sgtxt = substr($filename,0, -6);
+			$bldat = date('Ymd');
+			$xblnr = substr($filename,0, -8);
+			$sgtxt = substr($filename,0, -8);
 			$xxx = $counter;
 
-		fputs($dataFile,"1,$datetrn,KR,R400,$datetrn,$fiscalx,PHP,,Invoice-$xblnr,$sgtxt-$invoice,X\n");
+		fputs($dataFile,"1,$bldat,KR,R400,$datetrn,$fiscalx,PHP,,R400000$xblnr,$sgtxt-$invoice,X\n");
 
 
 		$sqlStr="select povnum,poladg,porvcs,poloc,ponumb from MMFMSLIB.POMRCH where pomrcv=$porcv";
@@ -297,21 +283,21 @@ if ($vatflag =='N') {
 	 	    $detailx= odbc_exec($AS400,$sqlStr);
 	 		while (odbc_fetch_row($detailx)) {
 
-		$venfsp=odbc_result($detailx,1);
+				$venfsp=odbc_result($detailx,1);
 
-		$sqlStrv="select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
-	 	    $detailv= odbc_exec($AS400,$sqlStrv);
-	 		odbc_fetch_row($detailv);
+				$sqlStrv="select asnum,asname,astaxc from MMFMSLIB.APSUPP where asnum=$venfsp";
+	 	    	$detailv= odbc_exec($AS400,$sqlStrv);
+	 			odbc_fetch_row($detailv);
 
-		$vatflag=odbc_result($detailv,3);
-		$venname=odbc_result($detailv,2);
+				$vatflag=odbc_result($detailv,3);
+				$venname=odbc_result($detailv,2);
 		//$sapven=odbc_result($detailv,1)+ 60000000;
 
 
-$db1 = mysqli_connect('localhost', 'root', '', 'payables_db');
+		$db1 = mysqli_connect('localhost', 'root', '', 'payables_db');
 
-$sql = "SELECT * FROM vendormap where fspvencode=$venfsp";
-$results = mysqli_query($db1, $sql)or die("MySQL error: " . mysqli_error($db1) . "<hr>\nQuery: $sql");  ;
+		$sql = "SELECT * FROM vendormap where fspvencode=$venfsp";
+		$results = mysqli_query($db1, $sql)or die("MySQL error: " . mysqli_error($db1) . "<hr>\nQuery: $sql");  ;
 
 		$row_vlist = mysqli_fetch_array($results,MYSQLI_ASSOC);
 		$sapven=$row_vlist['sapvencode'];
@@ -319,32 +305,22 @@ $results = mysqli_query($db1, $sql)or die("MySQL error: " . mysqli_error($db1) .
 		$merch=odbc_result($detailx,3);
 		$storecd=odbc_result($detailx,4);
 		$ponumber=odbc_result($detailx,5);
-		@$cstcenter=$store["$storecd"];
-		//$datetrnz=str_replace("-","",$row["mydate"]);
+		$cstcenter=$store["$storecd"];
 
-		//$len=strlen($datetrnz);
-		//if($len < 4 or $len == 0 or $datetrnz == "")
-		//	return 0;
-		//$yy=substr($datetrnz,$len-4,4);
-		//$mo=substr($datetrnz,$len-6,2);
-		//$day=substr($datetrnz,$len-8,2);
+		if ($vatflag =='N') {
 
-		$datetrnx="20$datex";
+				$suppamt=0;
+				$vatamt=$merch * .12;
+				$totpo=$merch;
+				$totpox=$merch;
 
-if ($vatflag =='N') {
+		}else{
 
-		$suppamt=0;
-		$vatamt=$merch * .12;
-		$totpo=$merch;
-		$totpox=$merch;
-
-}else{
-
-		$suppamt=0;
-		$totpo=$merch / 1.12;
-		$vatamt=$merch - $totpo;
-		$totpox=$merch;
-}
+				$suppamt=0;
+				$totpo=$merch / 1.12;
+				$vatamt=$merch - $totpo;
+				$totpox=$merch;
+		}
 
 //insert all 40  - DR
 
@@ -358,15 +334,12 @@ if ($vatflag =='N') {
 
 //fputs($dataFile,"</ItemHierarchyView>\n");
 
-		
-
 
 		}
 		
 		
 	}
 }
-			
 			
 	}
 

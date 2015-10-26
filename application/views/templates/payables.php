@@ -51,13 +51,15 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
         <?php if(number_format($values['POSHPR'],2) != number_format($values['PORVCS'],2)){ ?>
       <td style="background-color:#FA5858;color:#ffffff;"><?php echo number_format($values['POSHPR'], 2); ?></td>
       <td><input type="text" onkeypress="toggle(<?php echo $values['PONUMB']; ?>)" name="txt_<?php echo $values['PONUMB']; ?>" id="txt_<?php echo $values['PONUMB']; ?>"></td>
+      <td><input type="checkbox" name="selector[]" onclick="return false" id="check_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['PONUMB']; ?>"></td>
       <?php }else{ ?>
       <td style="background-color:#FFFFFF"><?php echo number_format($values['POSHPR'], 2); ?></td>
       <td></td>
+      <td><input type="checkbox" name="selector[]" id="check_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['PONUMB']; ?>"></td>
       <?php } ?>
       <input type="hidden" name="hdn_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['POMRCV']; ?>">
         
-        <td><input type="checkbox" name="selector[]" id="check_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['PONUMB']; ?>"></td>
+        
       <?php } ?>
   </table>
 <?php }else{ ?>
