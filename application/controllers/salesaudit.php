@@ -26,6 +26,18 @@ class Salesaudit extends CI_Controller{
 		$this->load->view('templates/salesaudit',$data);
 	}
 
+	public function salesaudit_total()
+	{
+		if (!$this->session->userdata('fm_username'))
+		{
+			redirect('payables/login');
+		}
+
+		# Load the view for home
+		$data['pagetitle'] = 'Sales Audit';
+		$this->load->view('templates/salesaudit_total',$data);
+	}
+
 	public function filter_salesaudit()
 	{
 		#convert date to YY/MM/DD
@@ -38,11 +50,33 @@ class Salesaudit extends CI_Controller{
 		$data['pagetitle'] = 'Sales Audit';
 		$data['salesaudit'] = $this->search_model->getResult($datefrom);
 		$this->load->view('templates/salesaudit',$data);
+
+
+		$action = $this->input->post('btnfilter');
+	}
+
+	public function filter_salesaudit_total()
+	{
+		#convert date to YY/MM/DD
+		$date = $this->input->post('datefilter');
+
+		$date = new DateTime($this->input->post('datefilter'));
+		$format_date_from = $date->format("ymd");
+		$frmt_date_from = "$format_date_from"; 
+		$datefrom =  $frmt_date_from;
+		
+		$data['pagetitle'] = 'Sales Audit';
+		$data['salesaudit'] = $this->search_model->getTotalResult($datefrom);
+
+		$this->load->view('templates/salesaudit_total',$data);
+
+
+		$action = $this->input->post('btnfilter');
 	}
 
 	public function exportSales()
 	{
-		
+		echo "hello sales";
 	}
 
 

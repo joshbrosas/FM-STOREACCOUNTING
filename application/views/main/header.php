@@ -80,7 +80,12 @@
                                 </ul>
                             </li>
                             <!--<li><a href="<?php echo base_url(); ?>index.php/payablesfc/index"> Payables FC </a></li>-->
-                           <li><a href="<?php echo base_url(); ?>index.php/salesaudit"> Sales Audit </a></li>
+                           <li><a href="<?php echo base_url(); ?>index.php/salesaudit"> Sales Audit </a>
+                            <ul class="nav nav-second-level">
+                                    <li><a href="<?php echo base_url(); ?>index.php/salesaudit/salesaudit_total">Total Sales</a></li>
+                                    <li><a href="<?php echo base_url(); ?>index.php/salesaudit">Per POS</a></li>
+                                </ul>
+                           </li>
                            <li><a href="<?php echo base_url(); ?>index.php/payables/consignment"> Consignment Sales </a></li>
                     </ul>
                 </div>

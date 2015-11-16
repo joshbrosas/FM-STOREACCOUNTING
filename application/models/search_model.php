@@ -29,6 +29,20 @@ class Search_model extends CI_Model {
 		return $result;
 	}
 
+	public function getTotalResult($search)
+	{
+		$this->dbh = new PDO($this->connectionString(),"","");
+
+	 	$query = "select b.strnam,sum(case when csdtyp in ('00','ZZ') then csdamt else 0 end),sum(case when a.csdtyp='VE' then a.csdamt else 0 end),sum(case when a.csdtyp='10' then a.csdamt else 0 end) 
+          	      from MMFMSLIB.CSHTND a inner join MMFMSLIB.TBLSTR b on a.csstor=b.strnum
+          	      where a.csdate = {$search} group by b.strnam order by b.strnam ";
+		
+		$statement = $this->dbh->prepare($query);
+		$statement->execute();
+		$result  = $statement->fetchAll();
+		return $result;
+	}
+
 	public function mod_matched()
 	{
 
