@@ -32,7 +32,7 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
             <td class="col-md-1" style="text-align: right"><?php echo number_format($values['00003'], 0); ?></td>
             <td class="col-md-1" style="text-align: right"><?php echo number_format($values['00004'], 0); ?></td>
   
-            <td class="col-md-1"><input type="checkbox" name="selector[]" id="" class="control-label" value=""></td>
+            <td class="col-md-1"><input type="checkbox" name="selector[]" id="" class="control-label" value="<?php echo trim($values['STRNAM']) ?>"></td>
           </tr>
         <?php } ?>
     <?php }else{ ?>
