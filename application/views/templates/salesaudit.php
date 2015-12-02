@@ -1,5 +1,5 @@
 <?php $this->load->view('main/header'); ?>
-<form method="post" action="<?php echo site_url('salesaudit/filter_salesaudit')?>" class="form-inline" id="formpayables">
+<form method="post" action="<?php echo site_url('payables/filter_salesaudit')?>" class="form-inline" id="formpayables">
   <div class="form-group">
     <label>Filter Date: </label>
     <div class="form-group input-group input-append date">
@@ -21,9 +21,6 @@
       </tr>
     </thead>
     <?php if(isset($salesaudit)){ ?>
-    <button type="submit" class="btn btn-success btn-circle btn-lg pull-right" style="padding:0px;z-index: 9999999;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
--moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa fa-check"></i></button>
         <?php foreach($salesaudit as $values){?>
           <tr>
             <td class="col-md-2"><?php echo $values['STRNAM']; ?></td>
