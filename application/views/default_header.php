@@ -17,7 +17,7 @@
 
     <!-- MetisMenu CSS -->
     <link href="<?php echo base_url(); ?>assets/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="http://cdn.jsdelivr.net/animatecss/2.1.0/animate.min.css">
     <!-- Custom CSS -->
     <link href="<?php echo base_url(); ?>assets/dist/css/sb-admin-2.css" rel="stylesheet">
 
@@ -38,4 +38,4 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4 col-md-offset-4">
-                <div class="login-panel panel panel-green">
+                <div class="login-panel panel panel-green animated bounceInDown" style="animation-delay: 0.2s">
