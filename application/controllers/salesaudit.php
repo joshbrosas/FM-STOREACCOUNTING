@@ -83,6 +83,13 @@ class Salesaudit extends CI_Controller{
 			$location = $this->input->post('selector');
 			$count_location = count($location);
 
+			if($count_location == 0)
+			{
+				$this->session->set_flashdata("message", "Please select location.");
+				redirect('salesaudit/salesaudit_total');
+
+			}
+
 			$today=date("Ymd");
 			$output_dir="csv.docs\\";
 			$filename = "$today.csv";
@@ -105,7 +112,7 @@ class Salesaudit extends CI_Controller{
 
 			  foreach ($result as $key => $value) {
 			  $cash = number_format($value['00002'], 0);
-			  $vat = number_format($value['00003'], 0);
+			  $vat  = number_format($value['00003'], 0);
 
 			 fputs($dataFile,"2, ,, ,$bldat,10,PHP,,,,,1,IC0TR400,\"$cash\",\"$cash\",P0010001,$bldat,,,,,Cash,,,, ,, ,, ,, ,,\n");
 			 fputs($dataFile,"2, ,, ,$bldat,10,PHP,,,,,1,IC0TR400,0,0,P0010001,$bldat,,,,,SNAP Payments,,,, ,, ,, ,, ,,\n");
@@ -118,34 +125,6 @@ class Salesaudit extends CI_Controller{
 			 fputs($dataFile,"2, ,, ,$bldat,10,PHP,,,,,50,IC0TR400,0,0,P0010001,$bldat,,,,,Sales VAT Exempt CVS,,,, ,, ,, ,, ,,\n");
 			 fputs($dataFile,"2, ,, ,$bldat,10,PHP,,,,,50,IC0TR400,\"$vat\",\"$vat\",P0010001,$bldat,,,,,VAT Amount,,,, ,, ,, ,, ,,\n");
 			  }
-			 
-			// 
-
-			// $query = "select b.strnam,sum(case when csdtyp in ('00','ZZ') then csdamt else 0 end),sum(case when a.csdtyp='VE' then a.csdamt else 0 end),sum(case when a.csdtyp='10' then a.csdamt else 0 end) 
-   //        	      from MMFMSLIB.CSHTND a inner join MMFMSLIB.TBLSTR b on a.csstor=b.strnum
-   //        	      where b.strnam = '".$location[$i]."' AND a.csdate = {$datefrom} group by b.strnam order by b.strnam ";
-
-   
-			   
-			// foreach ($result as $key => $value) {
-
-			
-				
-			// 	 #Indicator 1	
-			 
-			// 	 	 #Indicator 2
-			 
-
-			// }
-			  
-
-			 
-			  
-			  
-
-			
-
-			
 			}
 		}
 	}

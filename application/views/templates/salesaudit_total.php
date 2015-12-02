@@ -1,5 +1,5 @@
 <?php $this->load->view('main/header'); ?>
-<form method="post" action="<?php echo site_url('salesaudit/filter_salesaudit_total')?>" class="form-inline" id="formpayables">
+<form method="post" action="<?php echo site_url('salesaudit/filter_salesaudit_total')?>" onsubmit = "validate()" class="form-inline" id="formpayables">
   <div class="form-group">
     <label>Filter Date: </label>
     <div class="form-group input-group input-append date">
@@ -9,6 +9,12 @@
   </div>
   <input name="btnfilter" value="Filter" class="btn btn-success btn-sm" type="submit">
 <hr>
+<?php if($this->session->flashdata('message') != ""){ ?>
+    <div class="alert alert-danger alert-dismissible" role="alert" style="font-size: 13px">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Warning!</strong> <?php echo $this->session->flashdata("message"); ?>
+    </div>
+    <?php } ?>
 <table class="table table-bordered table-hover" style="font-size: 12px">
 	<thead style="font-size: 11px">
       <tr>
@@ -22,7 +28,7 @@
     <?php if(isset($salesaudit)){ ?>
     <button type="submit" class="btn btn-success btn-circle btn-lg pull-right" style="padding:0px;z-index: 9999999;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 -moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa fa-check"></i></button>
+box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease" title="Export to CSV File"><i class="fa fa-file-excel-o"></i></button>
         
         <?php foreach($salesaudit as $values){?>
           <tr>
@@ -39,9 +45,22 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
     <td colspan="7"><div class="alert alert-success" style="margin-bottom: 0px">Please select date.</div></td>
     <?php } ?> 
 </table>
+
  <!--  <button type="submit" class="btn btn-success btn-circle btn-lg pull-right" id="btn_sales" title="Export to CSV" style="padding:0px;z-index: 9999999;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
   -moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
   box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease;"><i class="fa fa-file"></i></button> -->
 </form>
-
+<script type="text/javascript">
+  $(document).ready(function(){
+        $('button[type="submit"]').click(function(){
+        var checked = $("input[type=checkbox]:checked"); //find all checked checkboxes + radio buttons
+        var nbChecked = checked.size();
+        if(nbChecked == 0)
+        {
+          alert('Please select location.');
+          return false;
+        }
+        });
+    });
+</script>
 <?php $this->load->view('main/footer'); ?>
