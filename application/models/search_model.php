@@ -29,6 +29,35 @@ class Search_model extends CI_Model {
 		return $result;
 	}
 
+	public function getTotalResult($search)
+	{
+		# Select location from mysql database
+		$query  = $this->db->query("SELECT * FROM payables_sa_status");
+		$get_result  = $query->result();
+		
+		$location = array();
+		$currdate = array();
+
+		foreach($get_result as $key => $value)
+			{
+				$location[] = $value->sa_location; #sa_location
+				$currdate[] = $value->sa_curr_date; #sa_current data
+			}
+
+
+		$this->dbh = new PDO($this->connectionString(),"","");
+
+	 	$query = "select b.strnum,b.strnam,sum(case when csdtyp in ('00','ZZ') then csdamt else 0 end),sum(case when a.csdtyp='VE' then a.csdamt else 0 end),sum(case when a.csdtyp='10' then a.csdamt else 0 end) 
+          	      from MMFMSLIB.CSHTND a inner join MMFMSLIB.TBLSTR b on a.csstor=b.strnum
+          	      where a.csdate = $search group by b.strnam,b.strnum order by b.strnam ";
+
+		$statement = $this->dbh->prepare($query);
+		$statement->execute();
+		$result  = $statement->fetchAll();
+		return $result;
+
+	}
+
 	public function mod_matched()
 	{
 
@@ -69,19 +98,18 @@ class Search_model extends CI_Model {
 			$poimplode = implode(',', $getallpo);
 			$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
 			
-
-		$store['00001']="R1000001";
-		$store['00002']="R1000002";
-		$store['00003']="R1000003";
-		$store['00004']="R1000004";
-		$store['00005']="R1000005";
-		$store['00006']="R1000006";
-		$store['00007']="R1000007";
-		$store['00008']="R1000008";
-		$store['00009']="R1000009";
-		$store['00010']="R1000010";
-		$store['20']="R2211022";
-		$store['9005']="R1009005";
+			$store['00001']="R1000001";
+			$store['00002']="R1000002";
+			$store['00003']="R1000003";
+			$store['00004']="R1000004";
+			$store['00005']="R1000005";
+			$store['00006']="R1000006";
+			$store['00007']="R1000007";
+			$store['00008']="R1000008";
+			$store['00009']="R1000009";
+			$store['00010']="R1000010";
+			$store['20']="R2211022";
+			$store['9005']="R1009005";
 
 	
 		$today=date("Ymd");
