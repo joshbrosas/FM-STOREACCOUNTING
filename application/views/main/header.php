@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-	<title>Store Accounting - <?php echo $pagetitle ?></title>
+	<title>Store Accounting - <?php echo htmlspecialchars_decode($pagetitle); ?></title>
 	<!-- Bootstrap Core CSS -->
     <link href="<?php echo base_url(); ?>assets/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- MetisMenu CSS -->
@@ -44,7 +44,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="<?php echo base_url();?>index.php/main/index"><strong style="color: #5cb85c">FamilyMart (<i>Store Accounting</i>) </strong></a>
+                <a class="navbar-brand" href="<?php echo base_url();?>index.php/payables/index"><strong style="color: #5cb85c">FamilyMart (<i>Store Accounting</i>) </strong></a>
             </div>
             <!-- /.navbar-header -->
 

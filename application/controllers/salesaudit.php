@@ -30,7 +30,7 @@ class Salesaudit extends CI_Controller{
 		}
 
 		# Load the view for home
-		$data['pagetitle'] = 'Sales Audit <small><i>(Per POS)</i></small>';
+		$data['pagetitle'] = 'Sales Audit | Per POS';
 		$this->load->view('templates/salesaudit_pos',$data);
 	}
 
@@ -42,7 +42,7 @@ class Salesaudit extends CI_Controller{
 		}
 
 		# Load the view for home
-		$data['pagetitle'] = 'Sales Audit <small><i>(Total Sales)</i></small>';
+		$data['pagetitle'] = 'Sales Audit | Total Sales';
 		$this->load->view('templates/salesaudit_total',$data);
 	}
 
@@ -62,6 +62,14 @@ class Salesaudit extends CI_Controller{
 		$this->load->view('templates/salesaudit_report',$data);
 	}
 
+	public function salesaudit_remove($id)
+	{
+		$this->db->where('id', $id);
+		$this->db->delete('payables_sa_status'); 
+
+		redirect('salesaudit/salesaudit_report');
+	}
+
 	public function filter_salesaudit_pos()
 	{
 		#convert date to YY/MM/DD
@@ -71,7 +79,7 @@ class Salesaudit extends CI_Controller{
 		$frmt_date_from = "$format_date_from"; 
 		$datefrom =  $frmt_date_from;
 		
-		$data['pagetitle'] = 'Sales Audit <small><i>(Per POS)</i></small>';
+		$data['pagetitle'] = 'Sales Audit | Per POS';
 		$data['salesaudit'] = $this->search_model->getResult($datefrom);
 		$this->load->view('templates/salesaudit_pos',$data);
 
@@ -89,7 +97,7 @@ class Salesaudit extends CI_Controller{
 		$frmt_date_from = "$format_date_from"; 
 		$datefrom =  $frmt_date_from;
 		
-		$data['pagetitle'] = 'Sales Audit <small><i>(Total Sales)</i></small>';
+		$data['pagetitle'] = 'Sales Audit | Total Sales';
 		$data['salesaudit'] = $this->search_model->getTotalResult($datefrom);
 
 		$this->load->view('templates/salesaudit_total',$data);

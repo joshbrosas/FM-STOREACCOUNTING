@@ -50,12 +50,12 @@ class Search_model extends CI_Model {
 	 	$query = "select b.strnum,b.strnam,sum(case when csdtyp in ('00','ZZ') then csdamt else 0 end),sum(case when a.csdtyp='VE' then a.csdamt else 0 end),sum(case when a.csdtyp='10' then a.csdamt else 0 end) 
           	      from MMFMSLIB.CSHTND a inner join MMFMSLIB.TBLSTR b on a.csstor=b.strnum
           	      where a.csdate = $search group by b.strnam,b.strnum order by b.strnam ";
+  
 
 		$statement = $this->dbh->prepare($query);
 		$statement->execute();
 		$result  = $statement->fetchAll();
 		return $result;
-
 	}
 
 	public function mod_matched()
@@ -118,8 +118,10 @@ class Search_model extends CI_Model {
 		// open a datafile
 		$i = '001';
 		$filename = "$today-".$i.".csv";
-		$dataFile = fopen($output_dir.$filename,'w');
-		$AS400 = odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'PASSWORD');
+		$dataFile = fopen($_SERVER['DOCUMENT_ROOT'] . "/storeaccounting/csv.docs/".$filename,'w');
+		$DSN = "DRIVER=iSeries Access ODBC Driver;SYSTEM=172.16.1.9;DBQ=MMFMSLIB";
+		$AS400 = odbc_connect($DSN, 'DCLACAP', 'PASSWORD');
+		#$AS400 = odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'PASSWORD');
 		fputs($dataFile,"IND, BLDAT, BLART, BUKRS,BUDAT,MONAT,WAERS,KURSF,XBLNR,SGTXT,CTAX,BSCHL,HKONT,DMBTR,WMBTR,PRCTR,ZUONR,HBNK,ACCID,MWSKZ,VALDT,ITTXT,KOSTL,WBSEL,UMSKZ\n");
 		$counter = 0;
 		foreach ($result_get_po as $value) {
@@ -249,8 +251,7 @@ class Search_model extends CI_Model {
 			$statement->execute();
 			$result_get_po  = $statement->fetchAll();
 
-		$poimplode = implode(',', $getallpo);
-			$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
+	
 			
 
 		$store['00001']="R1000001";
@@ -273,8 +274,9 @@ class Search_model extends CI_Model {
 		// open a datafile
 		$i = '001';
 		$filename = "$today-".$i.".csv";
-		$dataFile = fopen($output_dir.$filename,'w');
-		$AS400 = odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'PASSWORD');
+		$dataFile = fopen($_SERVER['DOCUMENT_ROOT'] . "/storeaccounting/csv.docs/".$filename,'w');
+		$DSN = "DRIVER=iSeries Access ODBC Driver;SYSTEM=172.16.1.9;DBQ=MMFMSLIB";
+		$AS400 = odbc_connect($DSN,'DCLACAP','PASSWORD');
 		fputs($dataFile,"IND, BLDAT, BLART, BUKRS,BUDAT,MONAT,WAERS,KURSF,XBLNR,SGTXT,CTAX,BSCHL,HKONT,DMBTR,WMBTR,PRCTR,ZUONR,HBNK,ACCID,MWSKZ,VALDT,ITTXT,KOSTL,WBSEL,UMSKZ\n");
 		$counter = 0;
 		foreach ($result_get_po as $value) {
@@ -366,9 +368,10 @@ class Search_model extends CI_Model {
 		}
 		
 		
+		}
 	}
-}
-			
+		$poimplode = implode(',', $getallpo);
+		$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');	
 	}
 
 	public function mod_payables($date)
@@ -444,7 +447,7 @@ class Search_model extends CI_Model {
 		$output_dir="csv.docs\\";
 		// open a datafile
 		$filename = "CONSIGNMENTSALES_"."$today".".csv";
-		$dataFile = fopen($output_dir.$filename,'w');
+		$dataFile = fopen($_SERVER['DOCUMENT_ROOT'] . "/storeaccounting/csv.docs/".$filename,'w');
 
 		fputs($dataFile,"VENDOR,TOTALSALES\n");
 		foreach ($result as $key => $value) {
