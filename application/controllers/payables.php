@@ -25,7 +25,7 @@ class Payables extends CI_Controller {
 	public function login()
 	{
 		$data['pagetitle'] = 'Login Page';
-		$this->load->view('templates/login',$data);
+		$this->load->view('templates/users/login',$data);
 
 		if($_SERVER['REQUEST_METHOD'] == 'POST')
 		{
@@ -35,11 +35,11 @@ class Payables extends CI_Controller {
 			$this->db->select('username, password');
 			$this->db->where('username', $jda_username);
 			$this->db->where('password', md5($jda_password));  
-			$query = $this->db->get('payables_login');
+			$query = $this->db->get('sa_authusers');
 			
 				if($query->num_rows() == 1)
 			{
-				$userinfo = $this->db->query("SELECT * FROM payables_login WHERE username = '{$jda_username}' AND password = md5($jda_password)");
+				$userinfo = $this->db->query("SELECT * FROM sa_authusers WHERE username = '{$jda_username}' AND password = md5($jda_password)");
 				$user_result = $userinfo->result();
 				$jda_roles = $user_result[0]->roles;
 
@@ -66,7 +66,7 @@ class Payables extends CI_Controller {
 	{
 		# Load the view for home
 		$data['pagetitle'] = 'Home';
-		$this->load->view('templates/home',$data);
+		$this->load->view('templates/users/home',$data);
 	}
 
 	public function ShowPay()
@@ -76,7 +76,7 @@ class Payables extends CI_Controller {
 			redirect('payables/login');
 		}
 		$data['pagetitle'] = 'Payables';
-		$this->load->view('templates/payables',$data);
+		$this->load->view('templates/payables_co/payables',$data);
 	}
 
 	public function postPayables(){
@@ -106,7 +106,7 @@ class Payables extends CI_Controller {
 					'new_amount' => $this->input->post('txt_'.$po_no[$i]),
 					'status'	 => '1');
 				}
-				$this->db->insert('payables_status', $payables_data);	
+				$this->db->insert('sa_pcostat', $payables_data);	
 			}
 
 		$this->session->set_flashdata('message', 'Changes successfully saved!');
@@ -119,23 +119,23 @@ class Payables extends CI_Controller {
 
 		$data['payables'] = $this->search_model->mod_payables($datefrom);
 		$data['pagetitle'] = 'Store Accounting';
-		$this->load->view('templates/payables',$data);
+		$this->load->view('templates/payables_co/payables',$data);
 	}
 
 	public function process()
 	{
 		if (!$this->session->userdata('fm_username'))
 		{
-			redirect('payables/login');
+			redirect('payables/users/login');
 		}
 
 
 		try {
-			$query = $this->db->query("SELECT * FROM payables_status");
+			$query = $this->db->query("SELECT * FROM sa_pcostat");
 
 			$p_status = $query->result();
 
-			$query = $this->db->query("SELECT po_no from payables_status  where status = 2");
+			$query = $this->db->query("SELECT po_no from sa_pcostat  where status = 2");
 			$res = $query->result();
 			$po = array();
 			foreach ($res as $key => $ponumb) {
@@ -161,7 +161,7 @@ class Payables extends CI_Controller {
 		}
 		$data['count_status'] = $p_status;
 		$data['pagetitle'] = 'Two Way Matched';
-		$this->load->view('templates/allprocess',$data);
+		$this->load->view('templates/payables_co/allprocess',$data);
 
 		if($_SERVER['REQUEST_METHOD'] == 'POST'){
 		$this->session->set_flashdata("message", "Successfully exported!");
@@ -184,11 +184,11 @@ class Payables extends CI_Controller {
 	{
 		try {
 		#check if the payable_status have a value
-		$query = $this->db->query("SELECT * FROM payables_status");
+		$query = $this->db->query("SELECT * FROM sa_pcostat");
 		$p_status = $query->result();
 
 
-		$query = $this->db->query("SELECT po_no, new_amount from payables_status  where status = 1");
+		$query = $this->db->query("SELECT po_no, new_amount from sa_pcostat  where status = 1");
 		$res = $query->result();
 		$po = array();
 		$amount = array();
@@ -217,7 +217,7 @@ class Payables extends CI_Controller {
 			}
 				$data['count_status'] = $p_status;
 				$data['pagetitle'] = 'Exception';
-				$this->load->view('templates/transaction', $data);	
+				$this->load->view('templates/payables_co/transaction', $data);	
 		} catch (Exception $e) {
 			echo $e->getMessage();	
 		}
@@ -228,13 +228,13 @@ class Payables extends CI_Controller {
 		#redirect to model with a function mod_exception
 		$this->search_model->mod_exception();
 		$this->session->set_flashdata("message", "Exported Successfully!");
-		redirect('payables/transaction');
+		redirect('payables/payables_co/transaction');
 	}
 
 	public function consignment()
 	{
 		$data['pagetitle'] = 'Consignment Sales';
-		$this->load->view('templates/consignment', $data);
+		$this->load->view('templates/consignment/consignment', $data);
 	}
 
 	public function filter_consignment()
@@ -263,7 +263,7 @@ class Payables extends CI_Controller {
 		
 		$data['result']	   = $this->search_model->consignment($datefrom, $dateto);
 		$data['pagetitle'] = 'Consignment Sales';
-		$this->load->view('templates/consignment', $data);
+		$this->load->view('templates/consignment/consignment', $data);
 	}
 
 	public function fdate($date1)

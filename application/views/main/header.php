@@ -79,6 +79,14 @@
                                     <li><a href="<?php echo base_url(); ?>index.php/payables/transaction"> Exception</a></li>
                                 </ul>
                             </li>
+
+                            <li><a href="#"> Payables FC </a>
+                                <ul class="nav nav-second-level">
+                                    <li><a href="#">Show Payables</a></li>
+                                    <li><a href="#">Two way matched</a></li>
+                                    <li><a href="#"> Exception</a></li>
+                                </ul>
+                            </li>
                             <!--<li><a href="<?php echo base_url(); ?>index.php/payablesfc/index"> Payables FC </a></li>-->
                            <li><a href="<?php echo base_url(); ?>index.php/salesaudit"> Sales Audit </a>
                             <ul class="nav nav-second-level">

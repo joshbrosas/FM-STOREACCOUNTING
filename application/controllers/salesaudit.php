@@ -31,7 +31,7 @@ class Salesaudit extends CI_Controller{
 
 		# Load the view for home
 		$data['pagetitle'] = 'Sales Audit | Per POS';
-		$this->load->view('templates/salesaudit_pos',$data);
+		$this->load->view('templates/salesaudit/salesaudit_pos',$data);
 	}
 
 	public function salesaudit_total()
@@ -43,7 +43,7 @@ class Salesaudit extends CI_Controller{
 
 		# Load the view for home
 		$data['pagetitle'] = 'Sales Audit | Total Sales';
-		$this->load->view('templates/salesaudit_total',$data);
+		$this->load->view('templates/salesaudit/salesaudit_total',$data);
 	}
 
 	public function salesaudit_report()
@@ -53,19 +53,19 @@ class Salesaudit extends CI_Controller{
 			redirect('payables/login');
 		}
 
-		$query  = $this->db->query("SELECT * FROM payables_sa_status");
+		$query  = $this->db->query("SELECT * FROM sa_salesaudit");
 		$get_result  = $query->result();
 		
 		# Load the view for home
 		$data['pagetitle'] = 'Sales Report';
 		$data['salesreport'] = $get_result;
-		$this->load->view('templates/salesaudit_report',$data);
+		$this->load->view('templates/salesaudit/salesaudit_report',$data);
 	}
 
 	public function salesaudit_remove($id)
 	{
 		$this->db->where('id', $id);
-		$this->db->delete('payables_sa_status'); 
+		$this->db->delete('sa_salesaudit'); 
 
 		redirect('salesaudit/salesaudit_report');
 	}
@@ -81,7 +81,7 @@ class Salesaudit extends CI_Controller{
 		
 		$data['pagetitle'] = 'Sales Audit | Per POS';
 		$data['salesaudit'] = $this->search_model->getResult($datefrom);
-		$this->load->view('templates/salesaudit_pos',$data);
+		$this->load->view('templates/salesaudit/salesaudit_pos',$data);
 
 		$action = $this->input->post('btnfilter');
 	}
@@ -100,7 +100,7 @@ class Salesaudit extends CI_Controller{
 		$data['pagetitle'] = 'Sales Audit | Total Sales';
 		$data['salesaudit'] = $this->search_model->getTotalResult($datefrom);
 
-		$this->load->view('templates/salesaudit_total',$data);
+		$this->load->view('templates/salesaudit/salesaudit_total',$data);
 
 		if($action != 'Filter')
 		{
@@ -119,7 +119,7 @@ class Salesaudit extends CI_Controller{
 					'sa_curr_date' => $datefrom	
 					);
 				
-				$this->db->insert('payables_sa_status', $sa_data);
+				$this->db->insert('sa_salesaudit', $sa_data);
 				
 			}
 			
@@ -137,7 +137,7 @@ class Salesaudit extends CI_Controller{
 			$bldat = date('Ymd');
 			fputs($dataFile,"IND, BLDAT_, BLART, BUKRS_,BUDAT_,MONAT,WAERS,KURSF,XBLNR,SGTXT,CTAX,BSCHL,HKONT,DMBTR,WMBTR,PRCTR,ZUONR,HBNK,ACCID,MWSKZ,VALDT,ITTXT,KOSTL,WBSEL,UMSKZ\n");
 
-				$query  = $this->db->query("SELECT * FROM payables_sa_status");
+				$query  = $this->db->query("SELECT * FROM sa_salesaudit");
 				$get_result  = $query->result();         
 			
 			 

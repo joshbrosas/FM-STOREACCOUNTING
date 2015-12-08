@@ -32,7 +32,7 @@ class Search_model extends CI_Model {
 	public function getTotalResult($search)
 	{
 		# Select location from mysql database
-		$query  = $this->db->query("SELECT * FROM payables_sa_status");
+		$query  = $this->db->query("SELECT * FROM sa_pcostat");
 		$get_result  = $query->result();
 		
 		$location = array();
@@ -62,7 +62,7 @@ class Search_model extends CI_Model {
 	{
 
 		set_time_limit(0);
-		$query = $this->db->query("SELECT po_no, new_amount from payables_status  where status = 1");
+		$query = $this->db->query("SELECT po_no, new_amount from sa_pcostat  where status = 1");
 		$res = $query->result();
 
 			$po = array();
@@ -74,7 +74,7 @@ class Search_model extends CI_Model {
 				$amt[] =  $ponumb->new_amount;
 			}
 
-			$query = $this->db->query("SELECT po_no from payables_status");
+			$query = $this->db->query("SELECT po_no from sa_pcostat");
 			$res = $query->result();
 			$getallpo = array();
 
@@ -96,7 +96,7 @@ class Search_model extends CI_Model {
 			$result_get_po  = $statement->fetchAll();
 
 			$poimplode = implode(',', $getallpo);
-			$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');
+			$query = $this->db->query('UPDATE sa_pcostat SET status = 3  where po_no in('.$poimplode.')');
 			
 			$store['00001']="R1000001";
 			$store['00002']="R1000002";
@@ -169,9 +169,9 @@ class Search_model extends CI_Model {
 		//$sapven=odbc_result($detailv,1)+ 60000000;
 
 
-		$db1 = mysqli_connect('localhost', 'root', '', 'payables_db');
+		$db1 = mysqli_connect('localhost', 'root', '', 'storeaccounting_db');
 
-		$sql = "SELECT * FROM vendormap where fspvencode=$venfsp";
+		$sql = "SELECT * FROM sa_vendormap where fspvencode=$venfsp";
 		$results = mysqli_query($db1, $sql)or die("MySQL error: " . mysqli_error($db1) . "<hr>\nQuery: $sql");  ;
 
 		$row_vlist = mysqli_fetch_array($results,MYSQLI_ASSOC);
@@ -219,7 +219,7 @@ class Search_model extends CI_Model {
 	{
 		set_time_limit(0);
 
-		$query = $this->db->query("SELECT po_no, new_amount from payables_status  where status = 1");
+		$query = $this->db->query("SELECT po_no, new_amount from sa_pcostat  where status = 1");
 		$res = $query->result();
 
 			$po = array();
@@ -230,7 +230,7 @@ class Search_model extends CI_Model {
 				$po[] =  $ponumb->po_no;
 				$amt[] =  $ponumb->new_amount;
 			}
-			$query = $this->db->query("SELECT po_no from payables_status");
+			$query = $this->db->query("SELECT po_no from sa_pcostat");
 			$res = $query->result();
 			$getallpo = array();
 
@@ -324,9 +324,9 @@ class Search_model extends CI_Model {
 		//$sapven=odbc_result($detailv,1)+ 60000000;
 
 
-		$db1 = mysqli_connect('localhost', 'root', '', 'payables_db');
+		$db1 = mysqli_connect('localhost', 'root', '', 'storeaccounting_db');
 
-		$sql = "SELECT * FROM vendormap where fspvencode=$venfsp";
+		$sql = "SELECT * FROM sa_vendormap where fspvencode=$venfsp";
 		$results = mysqli_query($db1, $sql)or die("MySQL error: " . mysqli_error($db1) . "<hr>\nQuery: $sql");  ;
 
 		$row_vlist = mysqli_fetch_array($results,MYSQLI_ASSOC);
@@ -371,12 +371,12 @@ class Search_model extends CI_Model {
 		}
 	}
 		$poimplode = implode(',', $getallpo);
-		$query = $this->db->query('UPDATE payables_status SET status = 3  where po_no in('.$poimplode.')');	
+		$query = $this->db->query('UPDATE sa_pcostat SET status = 3  where po_no in('.$poimplode.')');	
 	}
 
 	public function mod_payables($date)
 	{
-		$query = $this->db->query("SELECT po_no from payables_status");
+		$query = $this->db->query("SELECT po_no from sa_pcostat");
 		$res = $query->result();
 		
 		$po = array();

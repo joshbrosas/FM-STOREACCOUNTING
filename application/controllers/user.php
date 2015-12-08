@@ -17,7 +17,7 @@ class User extends CI_Controller {
 	 public function getCreateUser()
 	 {
 	 	$data['pagetitle'] = 'Create User';
-	 	$this->load->view('templates/createuser', $data);
+	 	$this->load->view('templates/users/createuser', $data);
 	 }
 
 	 public function postuser()
@@ -26,7 +26,7 @@ class User extends CI_Controller {
 	 	$password = $this->input->post('password');
 	 	$cpassword = $this->input->post('cpassword');
 
-	 	$this->form_validation->set_rules('username', 'Username', 'required|is_unique[payables_login.username]');
+	 	$this->form_validation->set_rules('username', 'Username', 'required|is_unique[sa_authusers.username]');
 		$this->form_validation->set_rules('password', 'Password', 'required|matches[cpassword]');
 		$this->form_validation->set_rules('cpassword', 'Password Confirmation', 'required');
 
@@ -44,7 +44,7 @@ class User extends CI_Controller {
 	 				'roles'	   => 2,
 	 				'created_by' => $this->session->userdata('fm_username')
 	 			);
-			$this->db->insert('payables_login', $data);
+			$this->db->insert('sa_authusers', $data);
 			$this->session->set_flashdata('message', 'User Successfully registered');
 			redirect('user/getcreateuser');
 			
