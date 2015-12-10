@@ -82,9 +82,9 @@
 
                             <li><a href="#"> Payables FC </a>
                                 <ul class="nav nav-second-level">
-                                    <li><a href="#">Show Payables</a></li>
-                                    <li><a href="#">Two way matched</a></li>
-                                    <li><a href="#"> Exception</a></li>
+                                    <li><a href="<?php echo base_url(); ?>index.php/payablesfc/showPayables">Show Payables</a></li>
+                                    <li><a href="<?php echo base_url(); ?>index.php/payablesfc/fcmatch">Two way matched</a></li>
+                                    <li><a href="<?php echo base_url(); ?>index.php/payablesfc/fcexception"> Exception</a></li>
                                 </ul>
                             </li>
                             <!--<li><a href="<?php echo base_url(); ?>index.php/payablesfc/index"> Payables FC </a></li>-->
