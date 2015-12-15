@@ -32,20 +32,38 @@ class Payablesfc extends CI_Controller {
 
 	public function postpayables()
 	{
+		ini_set('max_input_vars', 2000);
 		$action = $this->input->post('btnfilter');
 
 		if($action == 'Filter')
 		{
 			$filterdate =  $this->formatdate($this->input->post('date'));
 
-			$this->dbh = new PDO($this->connectionString(),"","");
+			$query = $this->db->query("SELECT PONO FROM sa_pfcstat");
+			
+			$ponumb = array();
+			foreach ($query->result() as $key => $value) {
+				$ponumb[] = $value->PONO;
+			}
 
-		 	$query = "select POEDAT,POSDAT,PONUMB,POVNUM,POCOST from MMFMSLIB.POMHDR where POEDAT =$filterdate";
-			
-			$statement = $this->dbh->prepare($query);
-			$statement->execute();
-			$result  = $statement->fetchAll();
-			
+			$pono = implode(',', $ponumb);
+			$count_po = count($ponumb);
+
+			$this->dbh = new PDO($this->connectionString(),"","");
+			if($count_po != 0)
+			{
+				$query = "select POEDAT,POSDAT,PONUMB,POVNUM,POCOST from MMFMSLIB.POMHDR where POEDAT =$filterdate AND PONUMB NOT IN ($pono)";
+				$statement = $this->dbh->prepare($query);
+				$statement->execute();
+				$result  = $statement->fetchAll();
+			}else{
+				$query = "select POEDAT,POSDAT,PONUMB,POVNUM,POCOST from MMFMSLIB.POMHDR where POEDAT =$filterdate ";
+				$statement = $this->dbh->prepare($query);
+				$statement->execute();
+				$result  = $statement->fetchAll();
+
+			}
+
 		 	$data['records'] = $result;
 			$data['pagetitle'] = 'Payables FC';
 			$this->load->view('templates/payables_fc/payablesfc',$data);
@@ -61,8 +79,8 @@ class Payablesfc extends CI_Controller {
 				if($this->input->post('txt_'.$po_no[$i]) == '')
 				{
 					$payablesfc_data = array(
-					'PONO'      => $po_no[$i],
-					'RCRNO'     => $this->input->post('hdn_'.$po_no[$i]),
+					'PONO'       => $po_no[$i],
+					'RCRNO'      => $this->input->post('hdn_'.$po_no[$i]),
 					'LOCATION'	 => $this->input->post('branch_'.$po_no[$i]),
 					'VENDOR'	 => $this->input->post('spname_'.$po_no[$i]),
 					'PTERM'	 	 => $this->input->post('payterm_'.$po_no[$i]),
@@ -74,8 +92,8 @@ class Payablesfc extends CI_Controller {
 					'STATUS'	 => '2');
 				}else{
 					$payablesfc_data = array(
-					'PONO'      => $po_no[$i],
-					'RCRNO'     => $this->input->post('hdn_'.$po_no[$i]),
+					'PONO'       => $po_no[$i],
+					'RCRNO'      => $this->input->post('hdn_'.$po_no[$i]),
 					'LOCATION'	 => $this->input->post('branch_'.$po_no[$i]),
 					'VENDOR'	 => $this->input->post('spname_'.$po_no[$i]),
 					'PTERM'	 	 => $this->input->post('payterm_'.$po_no[$i]),
@@ -116,9 +134,6 @@ class Payablesfc extends CI_Controller {
 
 	}
 
-
-
-	
 	public function formatdate($input)
 	{
 		#format date to  Y/M/D

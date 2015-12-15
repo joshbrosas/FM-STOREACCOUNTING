@@ -95,18 +95,32 @@ class Payables extends CI_Controller {
 				if($this->input->post('txt_'.$po_no[$i]) == '')
 				{
 					$payables_data = array(
-					'po_no'      => $po_no[$i],
-					'rcr_no'     => $this->input->post('hdn_'.$po_no[$i]),
-					'new_amount' => '',
-					'status'	 => '2');
+					'PONO'      => $po_no[$i],
+					'RCRNO'     => $this->input->post('hdn_'.$po_no[$i]),
+					'LOCATION' 	=> $this->input->post('LOC_'.$po_no[$i]),
+					'VENDOR'	=> $this->input->post('NME_'.$po_no[$i]),
+					'PTERM'		=> $this->input->post('TRMS_'.$po_no[$i]),
+					'RECDATE'	=> $this->input->post('DAT_'.$po_no[$i]),
+					'INVNO'		=> $this->input->post('ADG_'.$po_no[$i]),
+					'RCRAMT'	=> $this->input->post('VCS_'.$po_no[$i]),
+					'INVAMT'	=> $this->input->post('HPR_'.$po_no[$i]),
+					'NEWAMT'	=>	'',
+					'STATUS'	 => '2');
 				}else{
 					$payables_data = array(
-					'po_no'      => $po_no[$i],
-					'rcr_no'     => $this->input->post('hdn_'.$po_no[$i]),
-					'new_amount' => $this->input->post('txt_'.$po_no[$i]),
-					'status'	 => '1');
+					'PONO'      => $po_no[$i],
+					'RCRNO'     => $this->input->post('hdn_'.$po_no[$i]),
+					'LOCATION' 	=> $this->input->post('LOC_'.$po_no[$i]),
+					'VENDOR'	=> $this->input->post('NME_'.$po_no[$i]),
+					'PTERM'		=> $this->input->post('TRMS_'.$po_no[$i]),
+					'RECDATE'	=> $this->input->post('DAT_'.$po_no[$i]),
+					'INVNO'		=> $this->input->post('ADG_'.$po_no[$i]),
+					'RCRAMT'	=> $this->input->post('VCS_'.$po_no[$i]),
+					'INVAMT'	=> $this->input->post('HPR_'.$po_no[$i]),
+					'NEWAMT' 	=> $this->input->post('txt_'.$po_no[$i]),
+					'STATUS'	=> '1');
 				}
-				$this->db->insert('sa_pcostat', $payables_data);	
+				$this->db->insert('sa_pcostat', $payables_data);
 			}
 
 		$this->session->set_flashdata('message', 'Changes successfully saved!');
@@ -135,33 +149,18 @@ class Payables extends CI_Controller {
 
 			$p_status = $query->result();
 
-			$query = $this->db->query("SELECT po_no from sa_pcostat  where status = 2");
-			$res = $query->result();
-			$po = array();
-			foreach ($res as $key => $ponumb) {
-			$po[] =  $ponumb->po_no;
-			}
+			$query = $this->db->query("SELECT * from sa_pcostat  where status = 2");
+			$result = $query->result();
 
-			$this->dbh = new PDO($this->ConnectionString(),"","");
-
-			#check if the po is empty
-			if(!empty($po)){
-				$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
-                      from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
-                      where ponumb in('.implode(',', $po).')
-                      order by ponumb desc ';	
-		
-			$statement = $this->dbh->prepare($query);
-			$statement->execute();
-			$result  = $statement->fetchAll();
 			# Load the view for home
 			$data['process'] = $result;
 			$data['count_status'] = $p_status;
 
-		}
+		
+
 		$data['count_status'] = $p_status;
 		$data['pagetitle'] = 'Two Way Matched';
-		$this->load->view('templates/payables_co/allprocess',$data);
+		$this->load->view('templates/payables_co/twowaymatched',$data);
 
 		if($_SERVER['REQUEST_METHOD'] == 'POST'){
 		$this->session->set_flashdata("message", "Successfully exported!");
@@ -188,14 +187,14 @@ class Payables extends CI_Controller {
 		$p_status = $query->result();
 
 
-		$query = $this->db->query("SELECT po_no, new_amount from sa_pcostat  where status = 1");
+		$query = $this->db->query("SELECT PONO, NEWAMT from sa_pcostat  where status = 1");
 		$res = $query->result();
 		$po = array();
 		$amount = array();
 		foreach ($res as $key => $ponumb) 
 		{
-			$po[]  =  $ponumb->po_no;
-			$amt[] =  $ponumb->new_amount;
+			$po[]  =  $ponumb->PONO;
+			$amt[] =  $ponumb->NEWAMT;
 		}
 
 		$this->dbh = new PDO($this->ConnectionString(),"","");
@@ -228,7 +227,7 @@ class Payables extends CI_Controller {
 		#redirect to model with a function mod_exception
 		$this->search_model->mod_exception();
 		$this->session->set_flashdata("message", "Exported Successfully!");
-		redirect('payables/payables_co/transaction');
+		redirect('payables/transaction');
 	}
 
 	public function consignment()

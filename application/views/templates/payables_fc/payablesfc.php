@@ -45,14 +45,14 @@
           $AS400 = odbc_connect ('ansilive', 'pfmadmin', 'M@nager3971' ) or die ( 'Can not connect to server' );
 
           $sql_str= "select a.im_refno as JDAPO,a.im_branch,a.im_refno2 as ANSIPO,a.im_srcdest as VENDOR,e.sp_name,sum(b.is_cost*b.is_qty) as TotalCost
-                from [HOVQPBOS].[dbo].tinvmain a
-                right join [HOVQPBOS].[dbo].tinvsub b on b.is_iminvno=a.im_invno and a.im_branch=b.is_branch and a.im_invtype=b.is_invtype
-                inner join [HOVQPBOS].[dbo].mproduct c on b.is_itemid = c.pd_prodid
-                inner join [HOVQPBOS].[dbo].msupplr e on a.im_srcdest=e.sp_code
-                where a.im_invtype='P'
-                    and a.im_srcdest not in('099998') and a.im_candate='1900-01-01 00:00:00' and a.im_refno=$ponumb
-                  group by   a.im_refno,a.im_branch,a.im_refno2,a.im_srcdest,e.sp_name
-                  order by a.im_refno,a.im_branch";
+                     from [HOVQPBOS].[dbo].tinvmain a
+                     right join [HOVQPBOS].[dbo].tinvsub b on b.is_iminvno=a.im_invno and a.im_branch=b.is_branch and a.im_invtype=b.is_invtype
+                     inner join [HOVQPBOS].[dbo].mproduct c on b.is_itemid = c.pd_prodid
+                     inner join [HOVQPBOS].[dbo].msupplr e on a.im_srcdest=e.sp_code
+                     where a.im_invtype='P'
+                     and a.im_srcdest not in('099998') and a.im_candate='1900-01-01 00:00:00' and a.im_refno=$ponumb
+                     group by   a.im_refno,a.im_branch,a.im_refno2,a.im_srcdest,e.sp_name
+                     order by a.im_refno,a.im_branch";
 
 
           $detailx = odbc_exec($AS400,$sql_str);
@@ -126,5 +126,17 @@ $( "input" ).keypress(function(e) {
 
     if (!(a.indexOf(k) >= 0)) e.preventDefault();
 });
+
+$(document).ready(function(){
+        $('button[type="submit"]').click(function(){
+        var checked = $("input[type=checkbox]:checked"); //find all checked checkboxes + radio buttons
+        var nbChecked = checked.size();
+        if(nbChecked == 0)
+        {
+          alert('Please select a record.');
+          return false;
+        }
+        });
+    });
 </script>
 <?php $this->load->view('main/footer'); ?>

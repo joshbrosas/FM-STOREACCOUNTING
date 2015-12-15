@@ -60,9 +60,9 @@ class Search_model extends CI_Model {
 
 	public function mod_matched()
 	{
-
+		
 		set_time_limit(0);
-		$query = $this->db->query("SELECT po_no, new_amount from sa_pcostat  where status = 1");
+		$query = $this->db->query("SELECT PONO, NEWAMT from sa_pcostat  where status = 1");
 		$res = $query->result();
 
 			$po = array();
@@ -70,21 +70,20 @@ class Search_model extends CI_Model {
 
 			foreach ($res as $key => $ponumb) 
 			{
-				$po[] =  $ponumb->po_no;
-				$amt[] =  $ponumb->new_amount;
+				$po[] =  $ponumb->PONO;
+				$amt[] =  $ponumb->NEWAMT;
 			}
 
-			$query = $this->db->query("SELECT po_no from sa_pcostat");
+			$query = $this->db->query("SELECT PONO from sa_pcostat where STATUS != 3");
 			$res = $query->result();
 			$getallpo = array();
 
 			foreach ($res as $key => $ponumb)
 		 	 {
-			   $getallpo[] =  $ponumb->po_no;
+			   $getallpo[] =  $ponumb->PONO;
 			 }
 
 			$this->dbh = new PDO($this->connectionString(),"","");
-
 		
 			$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
                       from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
@@ -95,8 +94,7 @@ class Search_model extends CI_Model {
 			$statement->execute();
 			$result_get_po  = $statement->fetchAll();
 
-			$poimplode = implode(',', $getallpo);
-			$query = $this->db->query('UPDATE sa_pcostat SET status = 3  where po_no in('.$poimplode.')');
+			
 			
 			$store['00001']="R1000001";
 			$store['00002']="R1000002";
@@ -124,7 +122,9 @@ class Search_model extends CI_Model {
 		#$AS400 = odbc_connect("Driver={iSeries Access ODBC Driver};SYSTEM=172.16.1.9;DATABASE=MMFMSLIB;", 'DCLACAP', 'PASSWORD');
 		fputs($dataFile,"IND, BLDAT, BLART, BUKRS,BUDAT,MONAT,WAERS,KURSF,XBLNR,SGTXT,CTAX,BSCHL,HKONT,DMBTR,WMBTR,PRCTR,ZUONR,HBNK,ACCID,MWSKZ,VALDT,ITTXT,KOSTL,WBSEL,UMSKZ\n");
 		$counter = 0;
-		foreach ($result_get_po as $value) {
+		foreach ($result_get_po as $key => $value) {
+			echo $key;
+			
 
 			$budat = $value['PORDAT'];
 			$timestamp = strtotime($this->fdate($budat));
@@ -213,13 +213,16 @@ class Search_model extends CI_Model {
 		
 	}
 }
-}
+			$poimplode = implode(',', $getallpo);
+			$query = $this->db->query('UPDATE sa_pcostat SET STATUS = 3  where PONO in('.$poimplode.')');
+
+	}
 
 	public function mod_exception()
 	{
 		set_time_limit(0);
 
-		$query = $this->db->query("SELECT po_no, new_amount from sa_pcostat  where status = 1");
+		$query = $this->db->query("SELECT PONO, NEWAMT from sa_pcostat  where status = 1");
 		$res = $query->result();
 
 			$po = array();
@@ -227,16 +230,16 @@ class Search_model extends CI_Model {
 
 			foreach ($res as $key => $ponumb) 
 			{
-				$po[] =  $ponumb->po_no;
-				$amt[] =  $ponumb->new_amount;
+				$po[] =  $ponumb->PONO;
+				$amt[] =  $ponumb->NEWAMT;
 			}
-			$query = $this->db->query("SELECT po_no from sa_pcostat");
+			$query = $this->db->query("SELECT PONO from sa_pcostat WHERE STATUS != 3");
 			$res = $query->result();
 			$getallpo = array();
 
 			foreach ($res as $key => $ponumb)
 		 	 {
-			   $getallpo[] =  $ponumb->po_no;
+			   $getallpo[] =  $ponumb->PONO;
 			 }
 
 			$this->dbh = new PDO($this->connectionString(),"","");
@@ -371,17 +374,17 @@ class Search_model extends CI_Model {
 		}
 	}
 		$poimplode = implode(',', $getallpo);
-		$query = $this->db->query('UPDATE sa_pcostat SET status = 3  where po_no in('.$poimplode.')');	
+		$query = $this->db->query('UPDATE sa_pcostat SET status = 3  where PONO in('.$poimplode.')');	
 	}
 
 	public function mod_payables($date)
 	{
-		$query = $this->db->query("SELECT po_no from sa_pcostat");
+		$query = $this->db->query("SELECT PONO from sa_pcostat");
 		$res = $query->result();
 		
 		$po = array();
 		foreach ($res as $key => $ponumb) {
-			$po[] =  $ponumb->po_no;
+			$po[] =  $ponumb->PONO;
 		}
 
 		if(count($res)!= 0){

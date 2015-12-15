@@ -40,7 +40,7 @@
 
   <?php } ?>
 <?php if(count($process) == 0){ ?>
-<td colspan="9"><div class="alert alert-success" style="margin-bottom:0px;font-size:12px">No Records found.</div></td>
+<td colspan="10"><div class="alert alert-success" style="margin-bottom:0px;font-size:12px">No Records found.</div></td>
 <?php } ?>
   </table>
   <?php if(count($count_status) != 0){ ?>

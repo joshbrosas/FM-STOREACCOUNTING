@@ -39,6 +39,15 @@
 box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa fa-check"></i></button>
 
       <?php foreach($payables as $values){ ?>
+      <input type="hidden" name="hdn_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['POMRCV']; ?>">
+      <input type="hidden" name="RCV_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['POMRCV']; ?>">
+      <input type="hidden" name="LOC_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['POLOC']; ?>">
+      <input type="hidden" name="NME_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['ASNAME']; ?>">
+      <input type="hidden" name="TRMS_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['ASTRMS']; ?>">
+      <input type="hidden" name="DAT_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['PORDAT']; ?>">
+      <input type="hidden" name="ADG_<?php echo $values['PONUMB']; ?>" value="<?php echo trim($values['POLADG']); ?>">
+      <input type="hidden" name="VCS_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['PORVCS']; ?>">
+      <input type="hidden" name="HPR_<?php echo $values['PONUMB']; ?>" value="<?php echo trim($values['POSHPR']); ?>">
         <tr>
         <td><?php echo $values['PONUMB']; ?></td>
         <td><?php echo $values['POMRCV']; ?></td>
@@ -57,8 +66,8 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
       <td></td>
       <td><input type="checkbox" name="selector[]" id="check_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['PONUMB']; ?>"></td>
       <?php } ?>
-      <input type="hidden" name="hdn_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['POMRCV']; ?>">
-        
+      
+       
         
       <?php } ?>
   </table>
@@ -81,5 +90,18 @@ $( "input" ).keypress(function(e) {
 
     if (!(a.indexOf(k) >= 0)) e.preventDefault();
 });
+
+  $(document).ready(function(){
+        $('button[type="submit"]').click(function(){
+        var checked = $("input[type=checkbox]:checked"); //find all checked checkboxes + radio buttons
+        var nbChecked = checked.size();
+        if(nbChecked == 0)
+        {
+          alert('Please select a record.');
+          return false;
+        }
+        });
+    });
+
 </script>
 <?php $this->load->view('main/footer'); ?>
