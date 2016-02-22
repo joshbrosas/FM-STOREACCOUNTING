@@ -16,13 +16,13 @@ class Search_model extends CI_Model {
 	}
 
 	public function getResult($search)
-	{	
+	{
 		$this->dbh = new PDO($this->connectionString(),"","");
 
-	 	$query = "select b.strnam,a.csreg,sum(case when csdtyp in ('00','ZZ') then csdamt else 0 end),sum(case when a.csdtyp='VE' then a.csdamt else 0 end),sum(	  case when a.csdtyp='10' then a.csdamt else 0 end)   
+	 	$query = "select b.strnam,a.csreg,sum(case when csdtyp in ('00','ZZ') then csdamt else 0 end),sum(case when a.csdtyp='VE' then a.csdamt else 0 end),sum(	  case when a.csdtyp='10' then a.csdamt else 0 end)
           	      from MMFMSLIB.CSHTND a inner join MMFMSLIB.TBLSTR b on a.csstor=b.strnum
           	      where a.csdate = {$search} group by b.strnam,a.csreg order by b.strnam";
-		
+
 		$statement = $this->dbh->prepare($query);
 		$statement->execute();
 		$result  = $statement->fetchAll();
@@ -34,7 +34,7 @@ class Search_model extends CI_Model {
 		# Select location from mysql database
 		$query  = $this->db->query("SELECT * FROM sa_pcostat");
 		$get_result  = $query->result();
-		
+
 		$location = array();
 		$currdate = array();
 
@@ -47,10 +47,10 @@ class Search_model extends CI_Model {
 
 		$this->dbh = new PDO($this->connectionString(),"","");
 
-	 	$query = "select b.strnum,b.strnam,sum(case when csdtyp in ('00','ZZ') then csdamt else 0 end),sum(case when a.csdtyp='VE' then a.csdamt else 0 end),sum(case when a.csdtyp='10' then a.csdamt else 0 end) 
+	 	$query = "select b.strnum,b.strnam,sum(case when csdtyp in ('00','ZZ') then csdamt else 0 end),sum(case when a.csdtyp='VE' then a.csdamt else 0 end),sum(case when a.csdtyp='10' then a.csdamt else 0 end)
           	      from MMFMSLIB.CSHTND a inner join MMFMSLIB.TBLSTR b on a.csstor=b.strnum
           	      where a.csdate = $search group by b.strnam,b.strnum order by b.strnam ";
-  
+
 
 		$statement = $this->dbh->prepare($query);
 		$statement->execute();
@@ -60,7 +60,7 @@ class Search_model extends CI_Model {
 
 	public function mod_matched()
 	{
-		
+
 		set_time_limit(0);
 		$query = $this->db->query("SELECT PONO, NEWAMT from sa_pcostat  where status = 1");
 		$res = $query->result();
@@ -68,9 +68,9 @@ class Search_model extends CI_Model {
 			$po = array();
 			$amount = array();
 
-			foreach ($res as $key => $ponumb) 
+			foreach ($res as $key => $ponumb)
 			{
-				$po[] =  $ponumb->PONO;
+				$po[]  =  $ponumb->PONO;
 				$amt[] =  $ponumb->NEWAMT;
 			}
 
@@ -84,18 +84,18 @@ class Search_model extends CI_Model {
 			 }
 
 			$this->dbh = new PDO($this->connectionString(),"","");
-		
+
 			$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
                       from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
                       where ponumb in('.implode(',', $getallpo).')
-                      order by ponumb desc ';	
-		
+                      order by ponumb desc ';
+
 			$statement = $this->dbh->prepare($query);
 			$statement->execute();
 			$result_get_po  = $statement->fetchAll();
 
-			
-			
+
+
 			$store['00001']="R1000001";
 			$store['00002']="R1000002";
 			$store['00003']="R1000003";
@@ -109,9 +109,9 @@ class Search_model extends CI_Model {
 			$store['20']="R2211022";
 			$store['9005']="R1009005";
 
-	
+
 		$today=date("Ymd");
-			
+
 		$output_dir="csv.docs\\";
 		// open a datafile
 		$i = '001';
@@ -124,7 +124,7 @@ class Search_model extends CI_Model {
 		$counter = 0;
 		foreach ($result_get_po as $key => $value) {
 			echo $key;
-			
+
 
 			$budat = $value['PORDAT'];
 			$timestamp = strtotime($this->fdate($budat));
@@ -132,7 +132,7 @@ class Search_model extends CI_Model {
 
 			$timestamp = strtotime($this->fdate($budat));
 			$year = date('Ymd', $timestamp);
-			
+
 		$sql_str="select poladg,pomrcv from MMFMSLIB.POMRCH where pordat=$budat and postat=6";
 
 
@@ -209,8 +209,8 @@ class Search_model extends CI_Model {
 			fputs($dataFile,"2,,,,,,,,,,,31,$sapven,$totpo,$totpo,$cstcenter,$ponumber,,,P1,,,$cstcenter,,\n");
 //fputs($dataFile,"</ItemHierarchyView>\n");
 		}
-		
-		
+
+
 	}
 }
 			$poimplode = implode(',', $getallpo);
@@ -228,7 +228,7 @@ class Search_model extends CI_Model {
 			$po = array();
 			$amount = array();
 
-			foreach ($res as $key => $ponumb) 
+			foreach ($res as $key => $ponumb)
 			{
 				$po[] =  $ponumb->PONO;
 				$amt[] =  $ponumb->NEWAMT;
@@ -244,18 +244,18 @@ class Search_model extends CI_Model {
 
 			$this->dbh = new PDO($this->connectionString(),"","");
 
-		
+
 			$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
                       from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
                       where ponumb in('.implode(',', $getallpo).')
-                      order by ponumb desc ';	
-		
+                      order by ponumb desc ';
+
 			$statement = $this->dbh->prepare($query);
 			$statement->execute();
 			$result_get_po  = $statement->fetchAll();
 
-	
-			
+
+
 
 		$store['00001']="R1000001";
 		$store['00002']="R1000002";
@@ -270,9 +270,9 @@ class Search_model extends CI_Model {
 		$store['20']="R2211022";
 		$store['9005']="R1009005";
 
-	
+
 		$today=date("Ymd");
-			
+
 		$output_dir="csv.docs\\";
 		// open a datafile
 		$i = '001';
@@ -290,7 +290,7 @@ class Search_model extends CI_Model {
 
 			$timestamp = strtotime($this->fdate($budat));
 			$year = date('Ymd', $timestamp);
-			
+
 		$sql_str="select poladg,pomrcv from MMFMSLIB.POMRCH where pordat=$budat and postat=6";
 
 
@@ -369,84 +369,85 @@ class Search_model extends CI_Model {
 
 
 		}
-		
-		
+
+
 		}
 	}
 		$poimplode = implode(',', $getallpo);
-		$query = $this->db->query('UPDATE sa_pcostat SET status = 3  where PONO in('.$poimplode.')');	
+		$query = $this->db->query('UPDATE sa_pcostat SET status = 3  where PONO in('.$poimplode.')');
 	}
 
-	public function mod_payables($date)
-	{
-		$query = $this->db->query("SELECT PONO from sa_pcostat");
-		$res = $query->result();
-		
-		$po = array();
-		foreach ($res as $key => $ponumb) {
-			$po[] =  $ponumb->PONO;
-		}
-
-		if(count($res)!= 0){
-			$this->dbh = new PDO($this->connectionString(),"","");
-
-		$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
-                  from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
-                  where pordat = '.$date.' and ponumb not in('.implode(',', $po).')
-                  order by ponumb desc';	
-		$statement = $this->dbh->prepare($query);
-		$statement->execute();
-		$result  = $statement->fetchAll();
-		return $result;
-		}
-		else
+	public function mod_payables($date, $location, $vendor)
 		{
-		$this->dbh = new PDO($this->connectionString(),"","");
+			$query = $this->db->query("SELECT PONO from sa_pcostat");
+			$res = $query->result();
 
-		$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
-                  from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
-                  where pordat = '.$date.'
-                  order by ponumb desc';	
-		$statement = $this->dbh->prepare($query);
-		$statement->execute();
-		$result  = $statement->fetchAll();
-		return $result;
-	}	
-	}
+			$po = array();
+			foreach ($res as $key => $ponumb) {
+				$po[] =  $ponumb->PONO;
+			}
+			if(count($res)!= 0){
+				$this->dbh = new PDO($this->connectionString(),"","");
+			$query = "select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
+	                  from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
+	                  where pordat = {$date} and ponumb not in(".implode(',', $po).")
+										and poloc like '%".$location."%' and povnum like '%".$vendor."%'
+	                  order by ponumb desc";
+	
+			$statement = $this->dbh->prepare($query);
+			$statement->execute();
+			$result  = $statement->fetchAll();
+			return $result;
+			}
+			else
+			{
+			$this->dbh = new PDO($this->connectionString(),"","");
+			$query = 		"select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
+	                  from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
+	                  where pordat = {$date} and poloc like '%".$location."%' and povnum like '%".$vendor."%'
+	                  order by ponumb desc";
+
+			$statement = $this->dbh->prepare($query);
+			$statement->execute();
+			$result  = $statement->fetchAll();
+			return $result;
+		}
+		}
 
 	public function consignment($datefrom, $dateto)
 	{
 		$this->dbh = new PDO($this->connectionString(),"","");
 
-		$query = "select c.asname as vendor,sum(a.csexpr) as totalsales 
+		$query = "select c.asname as vendor,sum(a.csexpr) as totalsales
 				 from MMFMSLIB.cshdet a inner join MMFMSLIB.invmst b
-				  on a.cssku=b.inumbr inner join MMFMSLIB.apsupp c 
-				  on c.asnum=b.asnum where a.cscen=1 and csdate 
-				  between {$datefrom} and {$dateto} and b.istype='CC' 
+				  on a.cssku=b.inumbr inner join MMFMSLIB.apsupp c
+				  on c.asnum=b.asnum where a.cscen=1 and csdate
+				  between {$datefrom} and {$dateto} and b.istype='CC'
 				  group by c.asname";
-				  
+
 		$statement = $this->dbh->prepare($query);
 		$statement->execute();
 		$result  = $statement->fetchAll();
-		return $result;		  
+		return $result;
+
 	}
 
 	public function exportConsignment($datefrom, $dateto)
 	{
 		$this->dbh = new PDO($this->connectionString(),"","");
-		$query = "select c.asname as vendor,sum(a.csexpr) as totalsales 
+		$query = "select c.asname as vendor,sum(a.csexpr) as totalsales
 				 from MMFMSLIB.cshdet a inner join MMFMSLIB.invmst b
-				  on a.cssku=b.inumbr inner join MMFMSLIB.apsupp c 
-				  on c.asnum=b.asnum where a.cscen=1 and csdate 
-				  between {$datefrom} and {$dateto} and b.istype='CC' 
+				  on a.cssku=b.inumbr inner join MMFMSLIB.apsupp c
+				  on c.asnum=b.asnum where a.cscen=1 and csdate
+				  between {$datefrom} and {$dateto} and b.istype='CC'
 				  group by c.asname";
-				  
+
 		$statement = $this->dbh->prepare($query);
 		$statement->execute();
 		$result  = $statement->fetchAll();
 
 		$today=date("Ymd");
-			
+
 		$output_dir="csv.docs\\";
 		// open a datafile
 		$filename = "CONSIGNMENTSALES_"."$today".".csv";

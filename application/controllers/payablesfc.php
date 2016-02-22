@@ -10,7 +10,8 @@ class Payablesfc extends CI_Controller {
 		ini_set('max_execution_time', 3000); // time
 		set_time_limit(0);
 		$this->load->library('session');
-		#$payables = new Payables();	
+		$this->load->model('fc_model');
+		#$payables = new Payables();
 	}
 
 	public function ConnectionString()
@@ -38,30 +39,38 @@ class Payablesfc extends CI_Controller {
 		if($action == 'Filter')
 		{
 			$filterdate =  $this->formatdate($this->input->post('date'));
+			$location = $this->input->post('location');
+			$vendor 	= $this->input->post('vendor');
+
 
 			$query = $this->db->query("SELECT PONO FROM sa_pfcstat");
-			
+
 			$ponumb = array();
-			foreach ($query->result() as $key => $value) {
+			foreach ($query->result() as $key => $value)
+			{
 				$ponumb[] = $value->PONO;
 			}
 
 			$pono = implode(',', $ponumb);
 			$count_po = count($ponumb);
 
-			$this->dbh = new PDO($this->connectionString(),"","");
+
+
 			if($count_po != 0)
 			{
+				$this->dbh = new PDO($this->connectionString(),"","");
 				$query = "select POEDAT,POSDAT,PONUMB,POVNUM,POCOST from MMFMSLIB.POMHDR where POEDAT =$filterdate AND PONUMB NOT IN ($pono)";
 				$statement = $this->dbh->prepare($query);
 				$statement->execute();
 				$result  = $statement->fetchAll();
-			}else{
-				$query = "select POEDAT,POSDAT,PONUMB,POVNUM,POCOST from MMFMSLIB.POMHDR where POEDAT =$filterdate ";
+			}
+			else
+			{
+				$this->dbh = new PDO($this->connectionString(),"","");
+				$query = "select POEDAT,POSDAT,PONUMB,POVNUM,POCOST from MMFMSLIB.POMHDR where POEDAT =$filterdate and POVNUM like '%".$vendor."%' ";
 				$statement = $this->dbh->prepare($query);
 				$statement->execute();
 				$result  = $statement->fetchAll();
-
 			}
 
 		 	$data['records'] = $result;
@@ -139,8 +148,44 @@ class Payablesfc extends CI_Controller {
 		#format date to  Y/M/D
 		$date = new DateTime($input);
 		$format_date_from = $date->format("ymd");
-		$frmt_date_from = "$format_date_from"; 
+		$frmt_date_from = "$format_date_from";
 		$datefrom =  $frmt_date_from;
 		return $datefrom;
+	}
+
+
+	public function postMatched()
+	{
+		$action  = $this->input->post('action');
+		if($action == 'export_csv')
+		{
+			$query = $this->db->query("SELECT * from sa_pfcstat");
+			$res = $query->result();
+			$data = "";
+			foreach ($res as $key => $value) {
+				$pono = $value->PONO;
+				$rcr = $value->RCRNO;
+				$loc = $value->LOCATION;
+				$vendor = $value->VENDOR;
+				$pterm = $value->PTERM;
+				$recdate = $value->RECDATE;
+				$invno = $value->INVNO;
+				$rcramt = $value->RCRAMT;
+				$invamt = $value->INVAMT;
+				$newamt = $value->NEWAMT;
+				if($newamt== ''){
+					$newamt = 0;
+				}
+				$data .= $pono.','.$rcr.','.$loc.','.trim($vendor).','.$pterm.','.$recdate.','.$invno.','.$rcramt.','.$invamt.','.$newamt."\n";
+			}
+				$today=date("Ymd");
+				header('Content-Type: application/csv');
+				header('Content-Disposition: attachement; filename="payablesfc_exception_'.$today.'.csv"');
+				$header = "PONO".','."RCRNO".','."LOCATION".','."VENDOR".','."PAYMENTTERM".','."RECDATE".','."INVOICE#".','."RCRAMT".','."NEWAMT". "\n";
+				echo $header;
+				echo $data;
+				exit();
+		}
+		$this->fc_model->mod_fcmatched();
 	}
 }

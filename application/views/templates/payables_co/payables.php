@@ -14,6 +14,16 @@
        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
     </div>
   </div>
+
+    <div class="form-group">
+        <label for="exampleInputEmail2">Location: </label>
+        <input type="text" class="form-control input-sm" id="" name="location" value="<?php echo set_value('location', ''); ?>" placeholder="">
+    </div>
+
+    <div class="form-group">
+        <label for="exampleInputEmail2">POVNUM: </label>
+        <input type="text" class="form-control input-sm" id="" value="<?php echo set_value('vendor', ''); ?>" name="vendor" placeholder="">
+    </div>
   <input name="btnfilter" value="Filter" class="btn btn-success btn-sm" type="submit">
 <hr>
 <table class="table table-bordered table-hover" id="dataTables-example" style="font-size: 12px">
@@ -55,7 +65,7 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
         <td class="col-md-3"><?php echo $values['ASNAME']; ?></td>
         <td><?php echo $values['ASTRMS']; ?></td>
         <td><?php echo trim($values['PORDAT']); ?></td>
-        <td><?php echo $values['POLADG']; ?></td>
+        <td><input type="textbox" value="<?php echo $values['POLADG']; ?>"></td>
         <td><?php echo number_format($values['PORVCS'], 2); ?></td>
         <?php if(number_format($values['POSHPR'],2) != number_format($values['PORVCS'],2)){ ?>
       <td style="background-color:#FA5858;color:#ffffff;"><?php echo number_format($values['POSHPR'], 2); ?></td>
@@ -66,30 +76,30 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
       <td></td>
       <td><input type="checkbox" name="selector[]" id="check_<?php echo $values['PONUMB']; ?>" value="<?php echo $values['PONUMB']; ?>"></td>
       <?php } ?>
-      
-       
-        
+
+
+
       <?php } ?>
   </table>
 <?php }else{ ?>
     <td colspan="11"><div class="alert alert-success" style="margin-bottom: 0px">Please Select date.</div></td>
-<?php } ?> 
+<?php } ?>
   </form>
 <script>
-$( "input" ).keypress(function(e) {
-    var a = [];
-    var k = e.which;
-
-    for (i = 48; i < 58; i++)
-    a.push(i);
-
-    // allow a max of 1 decimal point to be entered
-    if (this.value.indexOf(".") === -1) {
-        a.push(46);
-    }
-
-    if (!(a.indexOf(k) >= 0)) e.preventDefault();
-});
+// $( "input" ).keypress(function(e) {
+//     var a = [];
+//     var k = e.which;
+//
+//     for (i = 48; i < 58; i++)
+//     a.push(i);
+//
+//     // allow a max of 1 decimal point to be entered
+//     if (this.value.indexOf(".") === -1) {
+//         a.push(46);
+//     }
+//
+//     if (!(a.indexOf(k) >= 0)) e.preventDefault();
+// });
 
   $(document).ready(function(){
         $('button[type="submit"]').click(function(){

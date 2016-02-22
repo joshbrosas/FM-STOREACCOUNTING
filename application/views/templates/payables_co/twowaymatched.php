@@ -18,7 +18,7 @@
         <th>REC DATE</th>
         <th>INVOICE #</th>
         <th>RCR AMT</th>
-        <th>INVOICE AMT</th>   
+        <th>INVOICE AMT</th>
       </tr>
     </thead>
 
@@ -34,7 +34,7 @@
         <td><?php echo $values->INVNO; ?></td>
         <td><?php echo number_format($values->RCRAMT, 2); ?></td>
         <td><?php echo number_format($values->INVAMT, 2); ?></td>
-      
+
       <?php } ?>
 
   <?php } ?>
@@ -44,9 +44,13 @@
   </table>
   <?php if(count($process) != 0){ ?>
   <form method="post" action="<?php echo site_url('payables/postMatched')?>">
-    <button type="submit" data-toggle="modal" data-target="#myModal" class="btn btn-success btn-circle btn-xl pull-right" title="Process SAP File" style="padding:0px;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+    <button type="submit" data-toggle="modal" data-target="#myModal" name="action" class="btn btn-success btn-circle btn-lg pull-right" title="Process SAP File" style="padding:0px;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 -moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa fa-file-excel-o"></i></button>
+
+<button class="btn btn-success btn-circle btn-lg pull-right" name="action" value="btn_csv" title="Export to CSV" style="padding:0px;outline: 0;margin-right: 95px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa fa-file"></i></button>
 </form>
 <?php } ?>
  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -60,7 +64,7 @@ box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa
                 <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
                     <span class="sr-only">Generating CSV Report...</span>
                     <strong>Generating CSV Report...</strong>
-                </div>                              
+                </div>
             </div>
           </div>
       </div>

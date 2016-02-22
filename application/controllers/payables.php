@@ -34,9 +34,9 @@ class Payables extends CI_Controller {
 
 			$this->db->select('username, password');
 			$this->db->where('username', $jda_username);
-			$this->db->where('password', md5($jda_password));  
+			$this->db->where('password', md5($jda_password));
 			$query = $this->db->get('sa_authusers');
-			
+
 				if($query->num_rows() == 1)
 			{
 				$userinfo = $this->db->query("SELECT * FROM sa_authusers WHERE username = '{$jda_username}' AND password = md5($jda_password)");
@@ -46,12 +46,12 @@ class Payables extends CI_Controller {
 				$this->session->set_userdata('fm_username',$jda_username);
 				$this->session->set_userdata('fm_password',$jda_password);
 				$this->session->set_userdata('fm_roles',   $jda_roles);
-				redirect('payables/index');	
+				redirect('payables/index');
 			}
 			else
 			{
 				$this->session->set_flashdata("message", "Incorrect Username/Password");
-				redirect('payables/login');	
+				redirect('payables/login');
 			}
 		}
 	}
@@ -85,7 +85,7 @@ class Payables extends CI_Controller {
 
 		if($action != 'Filter')
 		{
-		
+
 			$po_no = $this->input->post('selector');
 			$rcr_no = $this->input->post('rcr_no');
 			$count_po = count($po_no);
@@ -126,12 +126,16 @@ class Payables extends CI_Controller {
 		$this->session->set_flashdata('message', 'Changes successfully saved!');
 		redirect('payables/showpay');
 		}
+
+        $location = $this->input->post('location');
+        $vendor = $this->input->post('vendor');
+
 		$date = new DateTime($this->input->post('date'));
 		$format_date_from = $date->format("ymd");
-		$frmt_date_from = "$format_date_from"; 
+		$frmt_date_from = "$format_date_from";
 		$datefrom =  $frmt_date_from;
 
-		$data['payables'] = $this->search_model->mod_payables($datefrom);
+		$data['payables'] = $this->search_model->mod_payables($datefrom, $location, $vendor);
 		$data['pagetitle'] = 'Store Accounting';
 		$this->load->view('templates/payables_co/payables',$data);
 	}
@@ -156,9 +160,7 @@ class Payables extends CI_Controller {
 			$data['process'] = $result;
 			$data['count_status'] = $p_status;
 
-		
 
-		$data['count_status'] = $p_status;
 		$data['pagetitle'] = 'Two Way Matched';
 		$this->load->view('templates/payables_co/twowaymatched',$data);
 
@@ -167,16 +169,49 @@ class Payables extends CI_Controller {
 		redirect('payables/process');
 		}
 		} catch (PDOException $e) {
-			echo $e->getMessage();	
+			echo $e->getMessage();
 		}
 	}
 
 	public function postMatched()
 	{
 		#redirect to a model with a function mod_matched
+		$action = $this->input->post('action');
+
+
+		if($action == 'btn_csv')
+		{
+			$query = $this->db->query("SELECT * from sa_pcostat");
+			$res = $query->result();
+			$data = "";
+			foreach ($res as $key => $value) {
+				$pono = $value->PONO;
+				$rcr = $value->RCRNO;
+				$loc = $value->LOCATION;
+				$vendor = $value->VENDOR;
+				$pterm = $value->PTERM;
+				$recdate = $value->RECDATE;
+				$invno = $value->INVNO;
+				$rcramt = $value->RCRAMT;
+				$invamt = $value->INVAMT;
+				$newamt = $value->NEWAMT;
+				if($newamt== ''){
+					$newamt = 0;
+				}
+				$data .= $pono.','.$rcr.','.$loc.','.trim($vendor).','.$pterm.','.$recdate.','.$invno.','.$rcramt.','.$invamt.','.$newamt."\n";
+			}
+				$today=date("Ymd");
+				header('Content-Type: application/csv');
+				header('Content-Disposition: attachement; filename="payablesco_matched'.$today.'.csv"');
+				$header = "PONO".','."RCRNO".','."LOCATION".','."VENDOR".','."PAYMENTTERM".','."RECDATE".','."INVOICE#".','."RCRAMT".','."NEWAMT". "\n";
+				echo $header;
+				echo $data;
+				exit();
+		}else{
 		$this->search_model->mod_matched();
 		$this->session->set_flashdata("message", "Successfully exported!");
 		redirect('payables/process');
+	}
 	}
 
 	public function transaction()
@@ -191,7 +226,7 @@ class Payables extends CI_Controller {
 		$res = $query->result();
 		$po = array();
 		$amount = array();
-		foreach ($res as $key => $ponumb) 
+		foreach ($res as $key => $ponumb)
 		{
 			$po[]  =  $ponumb->PONO;
 			$amt[] =  $ponumb->NEWAMT;
@@ -205,26 +240,56 @@ class Payables extends CI_Controller {
 				$query = 'select ponumb,poloc,pordat,pomrcv,porvcs,poladg,poshpr,asname,astrms
                       from MMFMSLIB.POMRCH inner join  MMFMSLIB.APSUPP on povnum=asnum
                       where ponumb in('.implode(',', $po).')
-                      order by ponumb desc ';	
-		
+                      order by ponumb desc ';
+
 				$statement = $this->dbh->prepare($query);
 				$statement->execute();
 				$result  = $statement->fetchAll();
 				$data['count_status'] = $p_status;
 				$data['amount'] = $amt;
-				$data['transaction'] = $result;	
+				$data['transaction'] = $result;
 			}
 				$data['count_status'] = $p_status;
 				$data['pagetitle'] = 'Exception';
-				$this->load->view('templates/payables_co/transaction', $data);	
+				$this->load->view('templates/payables_co/transaction', $data);
 		} catch (Exception $e) {
-			echo $e->getMessage();	
+			echo $e->getMessage();
 		}
 	}
 
 	public function postException()
 	{
 		#redirect to model with a function mod_exception
+		$action = $this->input->post('action');
+		if($action == 'export_csv')
+		{
+			$query = $this->db->query("SELECT * from sa_pcostat where status = 1");
+			$res = $query->result();
+			$data = "";
+			foreach ($res as $key => $value) {
+				$pono = $value->PONO;
+				$rcr = $value->RCRNO;
+				$loc = $value->LOCATION;
+				$vendor = $value->VENDOR;
+				$pterm = $value->PTERM;
+				$recdate = $value->RECDATE;
+				$invno = $value->INVNO;
+				$rcramt = $value->RCRAMT;
+				$invamt = $value->INVAMT;
+				$newamt = $value->NEWAMT;
+				if($newamt== ''){
+					$newamt = 0;
+				}
+				$data .= $pono.','.$rcr.','.$loc.','.trim($vendor).','.$pterm.','.$recdate.','.$invno.','.$rcramt.','.$invamt.','.$newamt."\n";
+			}
+				$today=date("Ymd");
+				header('Content-Type: application/csv');
+				header('Content-Disposition: attachement; filename="payablesco_exception_'.$today.'.csv"');
+				$header = "PONO".','."RCRNO".','."LOCATION".','."VENDOR".','."PAYMENTTERM".','."RECDATE".','."INVOICE#".','."RCRAMT".','."NEWAMT". "\n";
+				echo $header;
+				echo $data;
+				exit();
+		}
 		$this->search_model->mod_exception();
 		$this->session->set_flashdata("message", "Exported Successfully!");
 		redirect('payables/transaction');
@@ -242,12 +307,12 @@ class Payables extends CI_Controller {
 
 		$date = new DateTime($this->input->post('datefilter1'));
 		$format_date_from = $date->format("ymd");
-		$frmt_date_from = "$format_date_from"; 
+		$frmt_date_from = "$format_date_from";
 		$datefrom =  $frmt_date_from;
 
 		$date = new DateTime($this->input->post('datefilter2'));
 		$format_date_from = $date->format("ymd");
-		$frmt_date_from = "$format_date_from"; 
+		$frmt_date_from = "$format_date_from";
 		$dateto =  $frmt_date_from;
 
 		if($action == 'export')
@@ -259,7 +324,7 @@ class Payables extends CI_Controller {
 		}
 
 		#convert date to YY/MM/DD
-		
+
 		$data['result']	   = $this->search_model->consignment($datefrom, $dateto);
 		$data['pagetitle'] = 'Consignment Sales';
 		$this->load->view('templates/consignment/consignment', $data);

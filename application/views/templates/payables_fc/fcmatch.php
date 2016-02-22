@@ -18,7 +18,7 @@
         <th>REC DATE</th>
         <th>INVOICE #</th>
         <th>RCR AMT</th>
-        <th>INVOICE AMT</th>   
+        <th>INVOICE AMT</th>
       </tr>
     </thead>
 
@@ -34,7 +34,7 @@
         <td><?php echo $fcmatch->INVNO; ?></td>
         <td><?php echo number_format($fcmatch->RCRAMT, 2); ?></td>
         <td><?php echo number_format($fcmatch->INVAMT, 2); ?></td>
-      
+
       <?php } ?>
 
   <?php } ?>
@@ -42,12 +42,16 @@
 <td colspan="9"><div class="alert alert-success" style="margin-bottom:0px;font-size:12px">No Records found.</div></td>
 <?php } ?>
   </table>
-  <?php if(count($process) != 0){ ?>
-  <form method="post" action="<?php echo site_url('payables/postMatched')?>">
-    <button type="submit" data-toggle="modal" data-target="#myModal" class="btn btn-success btn-circle btn-xl pull-right" title="Process SAP File" style="padding:0px;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+<?php if(count($process) != 0){ ?>
+  <form method="post" action="<?php echo site_url('payablesfc/postMatched')?>">
+    <button type="submit" name="action" data-toggle="modal" data-target="#myModal" class="btn btn-success btn-circle btn-lg pull-right" title="Process SAP File" style="padding:0px;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 -moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa fa-file-excel-o"></i></button>
+
+<button name="action" value="export_csv" class="btn btn-success btn-circle btn-lg pull-right" title="Export to CSV" style="padding:0px;outline: 0;margin-right: 95px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);transition: 1px ease"><i class="fa fa-file"></i></button>
 </form>
-<?php } ?>
- 
+<?php }?>
+
 <?php $this->load->view('main/footer'); ?>

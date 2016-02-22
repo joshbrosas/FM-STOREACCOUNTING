@@ -19,7 +19,7 @@
         <th>INVOICE #</th>
         <th>RCR AMT</th>
         <th>INVOICE AMT</th>
-        <th>NEW AMT</th>      
+        <th>NEW AMT</th>
       </tr>
     </thead>
 
@@ -45,9 +45,13 @@
 </table>
  <?php if(count($transaction) != 0){ ?>
 <form method="post" action="<?php echo site_url('payables/postException')?>">
-  <button type="submit" data-toggle="modal" data-target="#myModal" class="btn btn-success btn-circle btn-xl pull-right" title="Process SAP File" style="padding:10px;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+  <button type="submit" name="action" data-toggle="modal" data-target="#myModal" class="btn btn-success btn-circle btn-lg pull-right" title="Process SAP File" style="padding:10px;outline: 0;margin-right: 35px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 -moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
 box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);"><i class="fa fa-file-excel-o"></i></button>
+
+<button value="export_csv" name="action" class="btn btn-success btn-circle btn-lg pull-right" title="Export to CSV" style="padding:10px;outline: 0;margin-right: 95px;margin-bottom:25px;position: fixed;right: 0;bottom:0;-webkit-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);
+box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.75);"><i class="fa fa-file"></i></button>
 </form>
 <?php } ?>
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
